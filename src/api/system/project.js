@@ -1,18 +1,18 @@
 import request from '@/utils/request'
 
 // 查询菜单列表
-export function listMenu(query) {
+export function listProject(query) {
   return request({
-    url: '/system/menu/list',
+    url: '/system/project/list',
     method: 'get',
     params: query
   })
 }
 
 // 查询菜单详细
-export function getMenu(menuId) {
+export function getProject(projectId) {
   return request({
-    url: '/system/menu/' + menuId,
+    url: '/system/project/' + projectId,
     method: 'get'
   })
 }
@@ -20,41 +20,41 @@ export function getMenu(menuId) {
 // 查询菜单下拉树结构
 export function treeselect() {
   return request({
-    url: '/system/menu/treeselect',
+    url: '/system/project/treeselect',
     method: 'get'
   })
 }
 
 // 根据角色ID查询菜单下拉树结构
-export function roleMenuTreeselect(roleId) {
+export function roleProjectTreeselect(roleId) {
   return request({
-    url: '/system/menu/roleMenuTreeselect/' + roleId,
+    url: '/system/project/roleProjectTreeselect/' + roleId,
     method: 'get'
   })
 }
 
 // 新增菜单
-export function addMenu(data) {
+export function addProject(data) {
   return request({
-    url: '/system/menu',
+    url: '/system/project',
     method: 'post',
     data: data
   })
 }
 
 // 修改菜单
-export function updateMenu(data) {
+export function updateProject(data) {
   return request({
-    url: '/system/menu',
+    url: '/system/project',
     method: 'put',
     data: data
   })
 }
 
 // 删除菜单
-export function delMenu(menuId) {
+export function delProject(projectId) {
   return request({
-    url: '/system/menu/' + menuId,
+    url: '/system/project/' + projectId,
     method: 'delete'
   })
 }

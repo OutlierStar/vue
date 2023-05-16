@@ -136,12 +136,12 @@
           >删除</el-button>
           <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['system:role:edit']">
             <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
-            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-project slot="dropdown">
               <el-dropdown-item command="handleDataScope" icon="el-icon-circle-check"
                 v-hasPermi="['system:role:edit']">数据权限</el-dropdown-item>
               <el-dropdown-item command="handleAuthUser" icon="el-icon-user"
                 v-hasPermi="['system:role:edit']">分配用户</el-dropdown-item>
-            </el-dropdown-menu>
+            </el-dropdown-project>
           </el-dropdown>
         </template>
       </el-table-column>
@@ -183,16 +183,16 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="菜单权限">
-          <el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event, 'menu')">展开/折叠</el-checkbox>
-          <el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event, 'menu')">全选/全不选</el-checkbox>
-          <el-checkbox v-model="form.menuCheckStrictly" @change="handleCheckedTreeConnect($event, 'menu')">父子联动</el-checkbox>
+          <el-checkbox v-model="projectExpand" @change="handleCheckedTreeExpand($event, 'project')">展开/折叠</el-checkbox>
+          <el-checkbox v-model="projectNodeAll" @change="handleCheckedTreeNodeAll($event, 'project')">全选/全不选</el-checkbox>
+          <el-checkbox v-model="form.projectCheckStrictly" @change="handleCheckedTreeConnect($event, 'project')">父子联动</el-checkbox>
           <el-tree
             class="tree-border"
-            :data="menuOptions"
+            :data="projectOptions"
             show-checkbox
-            ref="menu"
+            ref="project"
             node-key="id"
-            :check-strictly="!form.menuCheckStrictly"
+            :check-strictly="!form.projectCheckStrictly"
             empty-text="加载中，请稍候"
             :props="defaultProps"
           ></el-tree>
@@ -253,7 +253,7 @@
 
 <script>
 import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role";
-import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu";
+import { treeselect as projectTreeselect, roleProjectTreeselect } from "@/api/system/project";
 
 export default {
   name: "Role",
@@ -280,8 +280,8 @@ export default {
       open: false,
       // 是否显示弹出层（数据权限）
       openDataScope: false,
-      menuExpand: false,
-      menuNodeAll: false,
+      projectExpand: false,
+      projectNodeAll: false,
       deptExpand: true,
       deptNodeAll: false,
       // 日期范围
@@ -310,7 +310,7 @@ export default {
         }
       ],
       // 菜单列表
-      menuOptions: [],
+      projectOptions: [],
       // 部门列表
       deptOptions: [],
       // 查询参数
@@ -356,17 +356,17 @@ export default {
       );
     },
     /** 查询菜单树结构 */
-    getMenuTreeselect() {
-      menuTreeselect().then(response => {
-        this.menuOptions = response.data;
+    getProjectTreeselect() {
+      projectTreeselect().then(response => {
+        this.projectOptions = response.data;
       });
     },
     // 所有菜单节点数据
-    getMenuAllCheckedKeys() {
+    getProjectAllCheckedKeys() {
       // 目前被选中的菜单节点
-      let checkedKeys = this.$refs.menu.getCheckedKeys();
+      let checkedKeys = this.$refs.project.getCheckedKeys();
       // 半选中的菜单节点
-      let halfCheckedKeys = this.$refs.menu.getHalfCheckedKeys();
+      let halfCheckedKeys = this.$refs.project.getHalfCheckedKeys();
       checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
       return checkedKeys;
     },
@@ -380,9 +380,9 @@ export default {
       return checkedKeys;
     },
     /** 根据角色ID查询菜单树结构 */
-    getRoleMenuTreeselect(roleId) {
-      return roleMenuTreeselect(roleId).then(response => {
-        this.menuOptions = response.menus;
+    getRoleProjectTreeselect(roleId) {
+      return roleProjectTreeselect(roleId).then(response => {
+        this.projectOptions = response.projects;
         return response;
       });
     },
@@ -416,11 +416,11 @@ export default {
     },
     // 表单重置
     reset() {
-      if (this.$refs.menu != undefined) {
-        this.$refs.menu.setCheckedKeys([]);
+      if (this.$refs.project != undefined) {
+        this.$refs.project.setCheckedKeys([]);
       }
-      this.menuExpand = false,
-      this.menuNodeAll = false,
+      this.projectExpand = false,
+      this.projectNodeAll = false,
       this.deptExpand = true,
       this.deptNodeAll = false,
       this.form = {
@@ -429,9 +429,9 @@ export default {
         roleKey: undefined,
         roleSort: 0,
         status: "0",
-        menuIds: [],
+        projectIds: [],
         deptIds: [],
-        menuCheckStrictly: true,
+        projectCheckStrictly: true,
         deptCheckStrictly: true,
         remark: undefined
       };
@@ -469,10 +469,10 @@ export default {
     },
     // 树权限（展开/折叠）
     handleCheckedTreeExpand(value, type) {
-      if (type == 'menu') {
-        let treeList = this.menuOptions;
+      if (type == 'project') {
+        let treeList = this.projectOptions;
         for (let i = 0; i < treeList.length; i++) {
-          this.$refs.menu.store.nodesMap[treeList[i].id].expanded = value;
+          this.$refs.project.store.nodesMap[treeList[i].id].expanded = value;
         }
       } else if (type == 'dept') {
         let treeList = this.deptOptions;
@@ -483,16 +483,16 @@ export default {
     },
     // 树权限（全选/全不选）
     handleCheckedTreeNodeAll(value, type) {
-      if (type == 'menu') {
-        this.$refs.menu.setCheckedNodes(value ? this.menuOptions: []);
+      if (type == 'project') {
+        this.$refs.project.setCheckedNodes(value ? this.projectOptions: []);
       } else if (type == 'dept') {
         this.$refs.dept.setCheckedNodes(value ? this.deptOptions: []);
       }
     },
     // 树权限（父子联动）
     handleCheckedTreeConnect(value, type) {
-      if (type == 'menu') {
-        this.form.menuCheckStrictly = value ? true: false;
+      if (type == 'project') {
+        this.form.projectCheckStrictly = value ? true: false;
       } else if (type == 'dept') {
         this.form.deptCheckStrictly = value ? true: false;
       }
@@ -500,7 +500,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.getMenuTreeselect();
+      this.getProjectTreeselect();
       this.open = true;
       this.title = "添加角色";
     },
@@ -508,16 +508,16 @@ export default {
     handleUpdate(row) {
       this.reset();
       const roleId = row.roleId || this.ids
-      const roleMenu = this.getRoleMenuTreeselect(roleId);
+      const roleProject = this.getRoleProjectTreeselect(roleId);
       getRole(roleId).then(response => {
         this.form = response.data;
         this.open = true;
         this.$nextTick(() => {
-          roleMenu.then(res => {
+          roleProject.then(res => {
             let checkedKeys = res.checkedKeys
             checkedKeys.forEach((v) => {
                 this.$nextTick(()=>{
-                    this.$refs.menu.setChecked(v, true ,false);
+                    this.$refs.project.setChecked(v, true ,false);
                 })
             })
           });
@@ -556,14 +556,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.roleId != undefined) {
-            this.form.menuIds = this.getMenuAllCheckedKeys();
+            this.form.projectIds = this.getProjectAllCheckedKeys();
             updateRole(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.form.menuIds = this.getMenuAllCheckedKeys();
+            this.form.projectIds = this.getProjectAllCheckedKeys();
             addRole(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
