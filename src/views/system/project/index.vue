@@ -150,17 +150,12 @@
           <el-col :span="24">
             <el-form-item label="选择团队" prop="teamId">
               <select
-                v-model="value"
+                v-model="form.teamId"
+                :options="projectOptions"
                 placeholder="请选择"
                 :normalizer="normalizer"
                 :show-count="true"
               >
-                <option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></option>
               </select>
               <!-- <treeselect
                 v-model="form.parentId"
@@ -392,7 +387,9 @@ import {
   addProject,
   updateProject,
 } from "@/api/system/project";
-import Treeselect from "@riophae/vue-treeselect";
+
+import listTeam from "@/api/system/team";
+
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import IconSelect from "@/components/IconSelect";
 
@@ -469,7 +466,6 @@ export default {
     /** 查询项目下拉树结构 */
     getSelect() {
       listTeam().then((response) => {
-
         this.projectOptions.push(response.data);
       });
 
