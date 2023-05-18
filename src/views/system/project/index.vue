@@ -151,15 +151,16 @@
             <el-form-item label="选择团队" prop="teamId">
               <select
                 v-model="form.teamId"
-                :options="projectOptions"
-                placeholder="请选择"
+                :options="teamOptions"
                 :normalizer="normalizer"
-                :show-count="true"
+                
+                placeholder="请选择"
               >
               </select>
+
               <!-- <treeselect
-                v-model="form.parentId"
-                :options="projectOptions"
+                v-model="form.teamId"
+                :options="teamOptions"
                 :normalizer="normalizer"
                 :show-count="true"
                 placeholder="选择团队"
@@ -388,7 +389,7 @@ import {
   updateProject,
 } from "@/api/system/project";
 
-import listTeam from "@/api/system/team";
+import {listTeam} from "@/api/system/team";
 
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import IconSelect from "@/components/IconSelect";
@@ -396,7 +397,7 @@ import IconSelect from "@/components/IconSelect";
 export default {
   name: "Project",
   dicts: ["sys_show_hide", "sys_normal_disable"],
-  components: { Treeselect, IconSelect },
+  components: {  IconSelect },
   data() {
     return {
       // 遮罩层
@@ -466,7 +467,13 @@ export default {
     /** 查询项目下拉树结构 */
     getSelect() {
       listTeam().then((response) => {
-        this.projectOptions.push(response.data);
+
+
+        this.teamOptions = [];
+        
+        this.teamOptions.push(this.selectItemAllObjectFromJson(response.data, "teamId"));
+        
+        console.log(this.teamOptions)
       });
 
     },
@@ -505,11 +512,7 @@ export default {
     handleAdd() {
       this.reset();
       this.getSelect();
-      if (row != null && row.teamId) {
-        this.form.projectId = row.projectId;
-      } else {
-        this.form.projectId = 0;
-      }
+      
       this.open = true;
       this.title = "添加项目";
     },

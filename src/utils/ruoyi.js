@@ -5,6 +5,7 @@
  * Copyright (c) 2019 ruoyi
  */
 
+
 // 日期格式化
 export function parseTime(time, pattern) {
   if (arguments.length === 0 || !time) {
@@ -149,6 +150,25 @@ export function mergeRecursive(source, target) {
   }
   return source;
 };
+
+
+/**
+ * 提取数组数据的每个属性
+ * 
+ * 
+ */
+export function selectItemAllObjectFromJson(data,params) {
+  let config = {
+    id: params || 'id'
+  };
+  var result = [];
+
+  for (let d of data) {
+    result.push(d[config.id]);
+  }
+  return result
+}
+
 
 /**
  * 构造树型结构数据
