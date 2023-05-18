@@ -535,7 +535,8 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      this.getTreeselect();
+      // this.getTreeselect();
+      this.getSelect();
       getProject(row.projectId).then((response) => {
         this.form = response.data;
         this.open = true;
