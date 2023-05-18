@@ -12,7 +12,7 @@ export function listProject(query) {
 // 查询项目详细
 export function getProject(projectId) {
   return request({
-    url: '/system/project/' + projectId,
+    url: '/system/project/?projectId=' + projectId,
     method: 'get'
   })
 }

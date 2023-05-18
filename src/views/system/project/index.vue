@@ -147,7 +147,7 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-row>
           <!-- 选择团队 -->
-          <el-col :span="24">
+          <el-col :span="12">
             <el-form-item label="选择团队" prop="teamId">
               <el-select v-model="form.teamId" placeholder="请选择">
                 <el-option
@@ -158,25 +158,20 @@
                 >
                 </el-option>
               </el-select>
-
-              <!-- <select
-                v-model="form.teamId"
-                :options="teamOptions"
-                :normalizer="normalizer"
-                placeholder="请选择"
-              ></select> -->
-
-              <!-- <treeselect
-                v-model="form.teamId"
-                :options="teamOptions"
-                :normalizer="normalizer"
-                :show-count="true"
-                placeholder="选择团队"
-              /> -->
             </el-form-item>
           </el-col>
 
-          <el-col :span="24">
+          <!-- 显示顺序 -->
+          <el-col :span="12">
+            <el-form-item label="显示排序" prop="orderNum">
+              <el-input-number
+                v-model="form.orderNum"
+                controls-position="right"
+                :min="0"
+              />
+            </el-form-item>
+          </el-col>
+          <!-- <el-col :span="24">
             <el-form-item label="项目类型" prop="projectType">
               <el-radio-group v-model="form.projectType">
                 <el-radio label="M">目录</el-radio>
@@ -184,8 +179,9 @@
                 <el-radio label="F">按钮</el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col :span="24" v-if="form.projectType != 'F'">
+          </el-col> -->
+
+          <!-- <el-col :span="24" v-if="form.projectType != 'F'">
             <el-form-item label="项目图标" prop="icon">
               <el-popover
                 placement="bottom-start"
@@ -218,7 +214,9 @@
                 </el-input>
               </el-popover>
             </el-form-item>
-          </el-col>
+          </el-col> -->
+
+          <!-- 项目名称 -->
           <el-col :span="12">
             <el-form-item label="项目名称" prop="projectName">
               <el-input
@@ -227,16 +225,19 @@
               />
             </el-form-item>
           </el-col>
+
           <el-col :span="12">
-            <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number
-                v-model="form.orderNum"
-                controls-position="right"
-                :min="0"
-              />
+            <el-form-item label="结束时间" prop="overTime">
+              <el-date-picker
+                v-model="form.overTime"
+                type="datetime"
+                placeholder="选择结束时间"
+              >
+              </el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.projectType != 'F'">
+
+          <!-- <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="isFrame">
               <span slot="label">
                 <el-tooltip
@@ -252,8 +253,57 @@
                 <el-radio label="1">否</el-radio>
               </el-radio-group>
             </el-form-item>
+          </el-col> -->
+
+          <el-col :span="12">
+            <el-form-item label="项目状态" prop="status">
+              <el-radio-group v-model="form.status">
+                <el-radio label="0">正常</el-radio>
+                <el-radio label="1">完结</el-radio>
+              </el-radio-group>
+            </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.projectType != 'F'">
+
+          <el-col :span="24">
+            <el-form-item label="项目简介" prop="projectContent">
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 2, maxRows: 4 }"
+                placeholder="请输入内容"
+                v-model="form.projectContent"
+              >
+              </el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12">
+            <el-form-item label="负责人" prop="leaderId">
+              <el-input v-model="form.leaderId" placeholder="请输入负责人" />
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12">
+            <el-form-item label="联系电话" prop="phone">
+              <el-input v-model="form.phone" placeholder="请输入联系电话" />
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12">
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="form.email" placeholder="请输入联系邮箱" />
+            </el-form-item>
+          </el-col>
+
+          <!-- <el-col :span="12">
+            <el-form-item label="隐藏" prop="delFlag">
+              <el-radio-group v-model="form.delFlag">
+                <el-radio label="0">正常</el-radio>
+                <el-radio label="1">隐藏</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col> -->
+
+          <!-- <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="path">
               <span slot="label">
                 <el-tooltip
@@ -266,8 +316,9 @@
               </span>
               <el-input v-model="form.path" placeholder="请输入路由地址" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="form.projectType == 'C'">
+          </el-col> -->
+
+          <!-- <el-col :span="12" v-if="form.projectType == 'C'">
             <el-form-item prop="component">
               <span slot="label">
                 <el-tooltip
@@ -280,8 +331,9 @@
               </span>
               <el-input v-model="form.component" placeholder="请输入组件路径" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="form.projectType != 'M'">
+          </el-col> -->
+
+          <!-- <el-col :span="12" v-if="form.projectType != 'M'">
             <el-form-item prop="perms">
               <el-input
                 v-model="form.perms"
@@ -298,8 +350,9 @@
                 权限字符
               </span>
             </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="form.projectType == 'C'">
+          </el-col> -->
+
+          <!-- <el-col :span="12" v-if="form.projectType == 'C'">
             <el-form-item prop="query">
               <el-input
                 v-model="form.query"
@@ -316,8 +369,9 @@
                 路由参数
               </span>
             </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="form.projectType == 'C'">
+          </el-col> -->
+
+          <!-- <el-col :span="12" v-if="form.projectType == 'C'">
             <el-form-item prop="isCache">
               <span slot="label">
                 <el-tooltip
@@ -333,8 +387,9 @@
                 <el-radio label="1">不缓存</el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="form.projectType != 'F'">
+          </el-col> -->
+
+          <!-- <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="visible">
               <span slot="label">
                 <el-tooltip
@@ -354,8 +409,9 @@
                 >
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="form.projectType != 'F'">
+          </el-col> -->
+
+          <!-- <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="status">
               <span slot="label">
                 <el-tooltip
@@ -375,7 +431,7 @@
                 >
               </el-radio-group>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
       </el-form>
 
@@ -436,12 +492,12 @@ export default {
         projectName: [
           { required: true, message: "项目名称不能为空", trigger: "blur" },
         ],
-        orderNum: [
-          { required: true, message: "项目顺序不能为空", trigger: "blur" },
-        ],
-        path: [
-          { required: true, message: "路由地址不能为空", trigger: "blur" },
-        ],
+        // orderNum: [
+        //   { required: true, message: "项目顺序不能为空", trigger: "blur" },
+        // ],
+        // path: [
+        //   { required: true, message: "路由地址不能为空", trigger: "blur" },
+        // ],
       },
     };
   },
@@ -476,13 +532,7 @@ export default {
     getSelect() {
       listTeam().then((response) => {
         this.teamOptions = [];
-
         this.teamOptions = response.data;
-        // this.teamOptions.push(
-        //   this.selectItemAllObjectFromJson(response.data, "teamId")
-        // );
-
-        console.log(this.teamOptions);
       });
     },
 
@@ -495,14 +545,8 @@ export default {
     reset() {
       this.form = {
         projectId: undefined,
-        // parentId: 0,
         projectName: undefined,
-        icon: undefined,
-        projectType: "M",
         orderNum: undefined,
-        isFrame: "1",
-        isCache: "0",
-        visible: "0",
         status: "0",
       };
       this.resetForm("form");
@@ -535,7 +579,6 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      // this.getTreeselect();
       this.getSelect();
       getProject(row.projectId).then((response) => {
         this.form = response.data;
