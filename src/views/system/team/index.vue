@@ -56,7 +56,7 @@
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="teamName" label="部门名称" width="260"></el-table-column>
+      <el-table-column prop="teamName" label="团队名称" width="260"></el-table-column>
       <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
       <el-table-column prop="status" label="状态" width="100">
         <template slot-scope="scope">
@@ -101,7 +101,7 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="部门名称" prop="teamName">
+            <el-form-item label="团队名称" prop="teamName">
               <el-input v-model="form.deptName" placeholder="请输入团队名称" />
             </el-form-item>
           </el-col>
@@ -186,9 +186,6 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        parentId: [
-          { required: true, message: "上级部门不能为空", trigger: "blur" }
-        ],
         deptName: [
           { required: true, message: "部门名称不能为空", trigger: "blur" }
         ],
@@ -219,7 +216,7 @@ export default {
     /** 查询部门列表 */
     getList() {
       this.loading = true;
-      listDept(this.queryParams).then(response => {
+      listDept(this.queryParams).then((response) => {
         this.deptList = this.handleTree(response.data, "teamId");
         this.loading = false;
       });
@@ -272,7 +269,7 @@ export default {
       this.open = true;
       this.title = "添加部门";
       listDept().then(response => {
-        this.deptOptions = this.handleTree(response.data, "deptId");
+        this.deptOptions = this.handleTree(response.data, "teamId");
       });
     },
     /** 展开/折叠操作 */
@@ -291,7 +288,7 @@ export default {
         this.open = true;
         this.title = "修改部门";
         listDeptExcludeChild(row.deptId).then(response => {
-          this.deptOptions = this.handleTree(response.data, "deptId");
+          this.deptOptions = this.handleTree(response.data, "teamId");
           if (this.deptOptions.length == 0) {
             const noResultsOptions = { deptId: this.form.parentId, deptName: this.form.parentName, children: [] };
             this.deptOptions.push(noResultsOptions);
