@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
-      <el-form-item label="团队名称" prop="deptName">
+      <el-form-item label="团队名称" prop="teamName">
         <el-input
-          v-model="queryParams.deptName"
+          v-model="queryParams.teamName"
           placeholder="请输入团队名称"
           clearable
           @keyup.enter.native="handleQuery"
@@ -33,7 +33,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:dept:add']"
+          v-hasPermi="['system:team:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -51,7 +51,7 @@
     <el-table
       v-if="refreshTable"
       v-loading="loading"
-      :data="deptList"
+      :data="teamList"
       row-key="teamId"
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
@@ -75,14 +75,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:dept:edit']"
+            v-hasPermi="['system:team:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-plus"
             @click="handleAdd(scope.row)"
-            v-hasPermi="['system:dept:add']"
+            v-hasPermi="['system:team:add']"
           >新增</el-button>
           <el-button
             v-if="scope.row.parentId != 0"
@@ -90,7 +90,7 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:dept:remove']"
+            v-hasPermi="['system:team:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -102,7 +102,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="团队名称" prop="teamName">
-              <el-input v-model="form.deptName" placeholder="请输入团队名称" />
+              <el-input v-model="form.teamName" placeholder="请输入团队名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -156,7 +156,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
-  name: "Dept",
+  name: "Team",
   dicts: ['sys_normal_disable'],
   components: { Treeselect },
   data() {
@@ -166,9 +166,9 @@ export default {
       // 显示搜索条件
       showSearch: true,
       // 表格树数据
-      deptList: [],
+      teamList: [],
       // 部门树选项
-      deptOptions: [],
+      teamOptions: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -179,14 +179,14 @@ export default {
       refreshTable: true,
       // 查询参数
       queryParams: {
-        deptName: undefined,
+        teamName: undefined,
         status: undefined
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        deptName: [
+        teamName: [
           { required: true, message: "部门名称不能为空", trigger: "blur" }
         ],
         orderNum: [
@@ -217,7 +217,7 @@ export default {
     getList() {
       this.loading = true;
       listTeam(this.queryParams).then((response) => {
-        this.deptList = this.handleTree(response.data, "teamId");
+        this.teamList = this.handleTree(response.data, "teamId");
         this.loading = false;
       });
     },
@@ -227,8 +227,8 @@ export default {
         delete node.children;
       }
       return {
-        id: node.deptId,
-        label: node.deptName,
+        id: node.teamId,
+        label: node.teamName,
         children: node.children
       };
     },
@@ -240,9 +240,9 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        deptId: undefined,
+        teamId: undefined,
         parentId: undefined,
-        deptName: undefined,
+        teamName: undefined,
         orderNum: undefined,
         leader: undefined,
         phone: undefined,
@@ -264,12 +264,12 @@ export default {
     handleAdd(row) {
       this.reset();
       if (row != undefined) {
-        this.form.parentId = row.deptId;
+        this.form.parentId = row.teamId;
       }
       this.open = true;
       this.title = "添加部门";
       listTeam().then(response => {
-        this.deptOptions = this.handleTree(response.data, "teamId");
+        this.teamOptions = this.handleTree(response.data, "teamId");
       });
     },
     /** 展开/折叠操作 */
@@ -283,15 +283,15 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      getTeam(row.deptId).then(response => {
+      getTeam(row.teamId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改部门";
-        listTeamExcludeChild(row.deptId).then(response => {
-          this.deptOptions = this.handleTree(response.data, "teamId");
-          if (this.deptOptions.length == 0) {
-            const noResultsOptions = { deptId: this.form.parentId, deptName: this.form.parentName, children: [] };
-            this.deptOptions.push(noResultsOptions);
+        this.title = "修改团队";
+        listTeamExcludeChild(row.teamId).then(response => {
+          this.teamOptions = this.handleTree(response.data, "teamId");
+          if (this.teamOptions.length == 0) {
+            const noResultsOptions = { teamId: this.form.parentId, teamName: this.form.parentName, children: [] };
+            this.teamOptions.push(noResultsOptions);
           }
         });
       });
@@ -300,7 +300,7 @@ export default {
     submitForm: function() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.deptId != undefined) {
+          if (this.form.teamId != undefined) {
             updateTeam(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -318,8 +318,8 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      this.$modal.confirm('是否确认删除名称为"' + row.deptName + '"的数据项？').then(function() {
-        return delTeam(row.deptId);
+      this.$modal.confirm('是否确认删除名称为"' + row.teamName + '"的数据项？').then(function() {
+        return delTeam(row.teamId);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
