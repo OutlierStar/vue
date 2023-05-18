@@ -161,7 +161,6 @@
             </el-form-item>
           </el-col>
 
-
           <!-- 显示顺序 -->
           <el-col :span="12">
             <el-form-item label="显示排序" prop="orderNum">
@@ -232,11 +231,11 @@
               <el-date-picker
                 v-model="form.overTime"
                 type="datetime"
-                placeholder="选择结束时间">
-            </el-date-picker>
+                placeholder="选择结束时间"
+              >
+              </el-date-picker>
             </el-form-item>
           </el-col>
-
 
           <!-- <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="isFrame">
@@ -271,7 +270,8 @@
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4 }"
                 placeholder="请输入内容"
-                v-model="form.projectContent">
+                v-model="form.projectContent"
+              >
               </el-input>
             </el-form-item>
           </el-col>
@@ -293,11 +293,6 @@
               <el-input v-model="form.email" placeholder="请输入联系邮箱" />
             </el-form-item>
           </el-col>
-
-
-
-
-
 
           <!-- <el-col :span="12">
             <el-form-item label="隐藏" prop="delFlag">
@@ -323,7 +318,6 @@
             </el-form-item>
           </el-col> -->
 
-
           <!-- <el-col :span="12" v-if="form.projectType == 'C'">
             <el-form-item prop="component">
               <span slot="label">
@@ -338,7 +332,6 @@
               <el-input v-model="form.component" placeholder="请输入组件路径" />
             </el-form-item>
           </el-col> -->
-
 
           <!-- <el-col :span="12" v-if="form.projectType != 'M'">
             <el-form-item prop="perms">
@@ -359,7 +352,6 @@
             </el-form-item>
           </el-col> -->
 
-
           <!-- <el-col :span="12" v-if="form.projectType == 'C'">
             <el-form-item prop="query">
               <el-input
@@ -379,7 +371,6 @@
             </el-form-item>
           </el-col> -->
 
-
           <!-- <el-col :span="12" v-if="form.projectType == 'C'">
             <el-form-item prop="isCache">
               <span slot="label">
@@ -397,7 +388,6 @@
               </el-radio-group>
             </el-form-item>
           </el-col> -->
-
 
           <!-- <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="visible">
@@ -421,7 +411,6 @@
             </el-form-item>
           </el-col> -->
 
-
           <!-- <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="status">
               <span slot="label">
@@ -443,8 +432,6 @@
               </el-radio-group>
             </el-form-item>
           </el-col> -->
-
-
         </el-row>
       </el-form>
 

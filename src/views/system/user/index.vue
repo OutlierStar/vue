@@ -65,6 +65,7 @@
         </el-form>
 
         <el-row :gutter="10" class="mb8">
+
           <el-col :span="1.5">
             <el-button
               type="primary"
@@ -75,6 +76,7 @@
               v-hasPermi="['system:user:add']"
             >新增</el-button>
           </el-col>
+
           <el-col :span="1.5">
             <el-button
               type="success"
@@ -86,6 +88,7 @@
               v-hasPermi="['system:user:edit']"
             >修改</el-button>
           </el-col>
+
           <el-col :span="1.5">
             <el-button
               type="danger"
@@ -97,6 +100,7 @@
               v-hasPermi="['system:user:remove']"
             >删除</el-button>
           </el-col>
+
           <el-col :span="1.5">
             <el-button
               type="info"
@@ -107,6 +111,7 @@
               v-hasPermi="['system:user:import']"
             >导入</el-button>
           </el-col>
+          
           <el-col :span="1.5">
             <el-button
               type="warning"
