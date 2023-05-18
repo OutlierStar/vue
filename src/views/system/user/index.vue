@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="20">
       <!--部门数据-->
-      <el-col :span="4" :xs="24">
+      <el-col :span="24" :xs="24">
         <div class="head-container">
           <el-input
             v-model="deptName"
