@@ -152,9 +152,9 @@
               <el-select v-model="form.teamId" placeholder="请选择">
                 <el-option
                   v-for="item in teamOptions"
-                  :key="item"
-                  :label="item"
-                  :value="item"
+                  :key="item.teamId"
+                  :label="item.teamName"
+                  :value="item.teamId"
                 >
                 </el-option>
               </el-select>
@@ -477,9 +477,10 @@ export default {
       listTeam().then((response) => {
         this.teamOptions = [];
 
-        this.teamOptions.push(
-          this.selectItemAllObjectFromJson(response.data, "teamId")
-        );
+        this.teamOptions = response.data;
+        // this.teamOptions.push(
+        //   this.selectItemAllObjectFromJson(response.data, "teamId")
+        // );
 
         console.log(this.teamOptions);
       });
