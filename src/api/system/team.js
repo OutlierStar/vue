@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 // 查询团队列表
-export function listTDept(query) {
+export function listDept(query) {
   return request({
     url: '/system/team/list',
     method: 'get',
