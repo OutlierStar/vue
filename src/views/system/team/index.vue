@@ -151,7 +151,7 @@
 </template>
 
 <script>
-import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild } from "@/api/system/team";
+import { listTeam, getTeam, delTeam, addTeam, updateTeam, listTeamExcludeChild } from "@/api/system/team";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -216,7 +216,7 @@ export default {
     /** 查询部门列表 */
     getList() {
       this.loading = true;
-      listDept(this.queryParams).then((response) => {
+      listTeam(this.queryParams).then((response) => {
         this.deptList = this.handleTree(response.data, "teamId");
         this.loading = false;
       });
@@ -268,7 +268,7 @@ export default {
       }
       this.open = true;
       this.title = "添加部门";
-      listDept().then(response => {
+      listTeam().then(response => {
         this.deptOptions = this.handleTree(response.data, "teamId");
       });
     },
@@ -283,11 +283,11 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      getDept(row.deptId).then(response => {
+      getTeam(row.deptId).then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改部门";
-        listDeptExcludeChild(row.deptId).then(response => {
+        listTeamExcludeChild(row.deptId).then(response => {
           this.deptOptions = this.handleTree(response.data, "teamId");
           if (this.deptOptions.length == 0) {
             const noResultsOptions = { deptId: this.form.parentId, deptName: this.form.parentName, children: [] };
@@ -301,13 +301,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.deptId != undefined) {
-            updateDept(this.form).then(response => {
+            updateTeam(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addDept(this.form).then(response => {
+            addTeam(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -319,7 +319,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       this.$modal.confirm('是否确认删除名称为"' + row.deptName + '"的数据项？').then(function() {
-        return delDept(row.deptId);
+        return delTeam(row.deptId);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
