@@ -13,22 +13,6 @@
             style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container">
-          <el-tree
-            :data="deptOptions"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            ref="tree"
-            node-key="id"
-            default-expand-all
-            highlight-current
-            @node-click="handleNodeClick"
-          />
-        </div>
-      </el-col>
-      <!--用户数据-->
-      <el-col :span="20" :xs="24">
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
           <el-form-item label="用户名称" prop="userName">
             <el-input
