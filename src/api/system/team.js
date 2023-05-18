@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 // 查询团队列表
-export function listTeam(query) {
+export function listTDept(query) {
   return request({
     url: '/system/team/list',
     method: 'get',
@@ -10,7 +10,7 @@ export function listTeam(query) {
 }
 
 // 查询团队列表（排除节点）
-export function listTeamExcludeChild(teamId) {
+export function listDeptExcludeChild(teamId) {
   return request({
     url: '/system/team/list/exclude/' + teamId,
     method: 'get'
@@ -18,7 +18,7 @@ export function listTeamExcludeChild(teamId) {
 }
 
 // 查询团队详细
-export function getTeam(teamId) {
+export function getDept(teamId) {
   return request({
     url: '/system/team/' + teamId,
     method: 'get'
@@ -26,7 +26,7 @@ export function getTeam(teamId) {
 }
 
 // 新增团队
-export function addTeam(data) {
+export function addDept(data) {
   return request({
     url: '/system/team',
     method: 'post',
@@ -35,7 +35,7 @@ export function addTeam(data) {
 }
 
 // 修改团队
-export function updateTeam(data) {
+export function updateDept(data) {
   return request({
     url: '/system/team',
     method: 'put',
@@ -44,7 +44,7 @@ export function updateTeam(data) {
 }
 
 // 删除团队
-export function delTeam(teamId) {
+export function delDept(teamId) {
   return request({
     url: '/system/team/' + teamId,
     method: 'delete'
