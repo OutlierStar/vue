@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+    <!-- 搜索 -->
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      size="small"
+      :inline="true"
+      v-show="showSearch"
+    >
       <el-form-item label="项目名称" prop="projectName">
         <el-input
           v-model="queryParams.projectName"
@@ -10,7 +17,11 @@
         />
       </el-form-item>
       <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="项目状态" clearable>
+        <el-select
+          v-model="queryParams.status"
+          placeholder="项目状态"
+          clearable
+        >
           <el-option
             v-for="dict in dict.type.sys_normal_disable"
             :key="dict.value"
@@ -20,12 +31,22 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+          >搜索</el-button
+        >
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+          >重置</el-button
+        >
       </el-form-item>
     </el-form>
 
+    <!-- 表上的新增 -->
     <el-row :gutter="10" class="mb8">
+      <!-- 新增 -->
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -34,40 +55,59 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:project:add']"
-        >新增</el-button>
+          >新增</el-button
+        >
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="info"
-          plain
-          icon="el-icon-sort"
-          size="mini"
-          @click="toggleExpandAll"
-        >展开/折叠</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar>
     </el-row>
 
+    <!-- 项目表 -->
     <el-table
       v-if="refreshTable"
       v-loading="loading"
       :data="projectList"
       row-key="projectId"
       :default-expand-all="isExpandAll"
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
     >
-      
-      <el-table-column prop="projectId" label="项目id" width="160"></el-table-column>
-      <el-table-column prop="projectName" label="项目名称" :show-overflow-tooltip="true" width="160"></el-table-column>
+      <el-table-column
+        prop="projectId"
+        label="项目id"
+        width="160"
+      ></el-table-column>
+      <el-table-column
+        prop="projectName"
+        label="项目名称"
+        :show-overflow-tooltip="true"
+        width="160"
+      ></el-table-column>
       <!-- <el-table-column prop="icon" label="图标" align="center" width="100">
         <template slot-scope="scope">
           <svg-icon :icon-class="scope.row.icon" />
         </template>
       </el-table-column> -->
-      <el-table-column prop="projectContent" label="简介"  width="60"></el-table-column>
+      <el-table-column
+        prop="projectContent"
+        label="简介"
+        :show-overflow-tooltip="true"
+        width="60"
+      ></el-table-column>
       <!-- <el-table-column prop="perms" label="权限标识" :show-overflow-tooltip="true"></el-table-column> -->
       <!-- <el-table-column prop="component" label="组件路径" :show-overflow-tooltip="true"></el-table-column> -->
-      <el-table-column prop="status" label="状态" width="80"></el-table-column>
+      <!-- <el-table-column prop="status" label="状态" width="80"></el-table-column> -->
+
+      <el-table-column prop="status" label="状态" width="80">
+        <template slot-scope="scope">
+          <dict-tag
+            :options="dict.type.sys_normal_disable"
+            :value="scope.row.status"
+          />
+        </template>
+      </el-table-column>
 
       <el-table-column label="创建时间" align="center" prop="createTime">
         <template slot-scope="scope">
@@ -75,7 +115,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -83,41 +127,51 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:project:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-plus"
-            @click="handleAdd(scope.row)"
-            v-hasPermi="['system:project:add']"
-          >新增</el-button>
+            >修改</el-button
+          >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:project:remove']"
-          >删除</el-button>
+            >删除</el-button
+          >
         </template>
       </el-table-column>
-
     </el-table>
 
     <!-- 添加或修改项目对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="680px" append-to-body>
+      <!-- 表单内容 -->
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-row>
+          <!-- 选择团队 -->
           <el-col :span="24">
-            <el-form-item label="上级项目" prop="parentId">
-              <treeselect
+            <el-form-item label="选择团队" prop="teamId">
+              <select
+                v-model="value"
+                placeholder="请选择"
+                :normalizer="normalizer"
+                :show-count="true"
+              >
+                <option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></option>
+              </select>
+              <!-- <treeselect
                 v-model="form.parentId"
                 :options="projectOptions"
                 :normalizer="normalizer"
                 :show-count="true"
-                placeholder="选择上级项目"
-              />
+                placeholder="选择团队"
+              /> -->
             </el-form-item>
           </el-col>
+
           <el-col :span="24">
             <el-form-item label="项目类型" prop="projectType">
               <el-radio-group v-model="form.projectType">
@@ -135,34 +189,57 @@
                 trigger="click"
                 @show="$refs['iconSelect'].reset()"
               >
-                <IconSelect ref="iconSelect" @selected="selected" :active-icon="form.icon" />
-                <el-input slot="reference" v-model="form.icon" placeholder="点击选择图标" readonly>
+                <IconSelect
+                  ref="iconSelect"
+                  @selected="selected"
+                  :active-icon="form.icon"
+                />
+                <el-input
+                  slot="reference"
+                  v-model="form.icon"
+                  placeholder="点击选择图标"
+                  readonly
+                >
                   <svg-icon
                     v-if="form.icon"
                     slot="prefix"
                     :icon-class="form.icon"
-                    style="width: 25px;"
+                    style="width: 25px"
                   />
-                  <i v-else slot="prefix" class="el-icon-search el-input__icon" />
+                  <i
+                    v-else
+                    slot="prefix"
+                    class="el-icon-search el-input__icon"
+                  />
                 </el-input>
               </el-popover>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="项目名称" prop="projectName">
-              <el-input v-model="form.projectName" placeholder="请输入项目名称" />
+              <el-input
+                v-model="form.projectName"
+                placeholder="请输入项目名称"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
+              <el-input-number
+                v-model="form.orderNum"
+                controls-position="right"
+                :min="0"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="isFrame">
               <span slot="label">
-                <el-tooltip content="选择是外链则路由地址需要以`http(s)://`开头" placement="top">
-                <i class="el-icon-question"></i>
+                <el-tooltip
+                  content="选择是外链则路由地址需要以`http(s)://`开头"
+                  placement="top"
+                >
+                  <i class="el-icon-question"></i>
                 </el-tooltip>
                 是否外链
               </span>
@@ -175,8 +252,11 @@
           <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="path">
               <span slot="label">
-                <el-tooltip content="访问的路由地址，如：`user`，如外网地址需内链访问则以`http(s)://`开头" placement="top">
-                <i class="el-icon-question"></i>
+                <el-tooltip
+                  content="访问的路由地址，如：`user`，如外网地址需内链访问则以`http(s)://`开头"
+                  placement="top"
+                >
+                  <i class="el-icon-question"></i>
                 </el-tooltip>
                 路由地址
               </span>
@@ -186,8 +266,11 @@
           <el-col :span="12" v-if="form.projectType == 'C'">
             <el-form-item prop="component">
               <span slot="label">
-                <el-tooltip content="访问的组件路径，如：`system/user/index`，默认在`views`目录下" placement="top">
-                <i class="el-icon-question"></i>
+                <el-tooltip
+                  content="访问的组件路径，如：`system/user/index`，默认在`views`目录下"
+                  placement="top"
+                >
+                  <i class="el-icon-question"></i>
                 </el-tooltip>
                 组件路径
               </span>
@@ -196,10 +279,17 @@
           </el-col>
           <el-col :span="12" v-if="form.projectType != 'M'">
             <el-form-item prop="perms">
-              <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100" />
+              <el-input
+                v-model="form.perms"
+                placeholder="请输入权限标识"
+                maxlength="100"
+              />
               <span slot="label">
-                <el-tooltip content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)" placement="top">
-                <i class="el-icon-question"></i>
+                <el-tooltip
+                  content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)"
+                  placement="top"
+                >
+                  <i class="el-icon-question"></i>
                 </el-tooltip>
                 权限字符
               </span>
@@ -207,10 +297,17 @@
           </el-col>
           <el-col :span="12" v-if="form.projectType == 'C'">
             <el-form-item prop="query">
-              <el-input v-model="form.query" placeholder="请输入路由参数" maxlength="255" />
+              <el-input
+                v-model="form.query"
+                placeholder="请输入路由参数"
+                maxlength="255"
+              />
               <span slot="label">
-                <el-tooltip content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`' placement="top">
-                <i class="el-icon-question"></i>
+                <el-tooltip
+                  content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`'
+                  placement="top"
+                >
+                  <i class="el-icon-question"></i>
                 </el-tooltip>
                 路由参数
               </span>
@@ -219,8 +316,11 @@
           <el-col :span="12" v-if="form.projectType == 'C'">
             <el-form-item prop="isCache">
               <span slot="label">
-                <el-tooltip content="选择是则会被`keep-alive`缓存，需要匹配组件的`name`和地址保持一致" placement="top">
-                <i class="el-icon-question"></i>
+                <el-tooltip
+                  content="选择是则会被`keep-alive`缓存，需要匹配组件的`name`和地址保持一致"
+                  placement="top"
+                >
+                  <i class="el-icon-question"></i>
                 </el-tooltip>
                 是否缓存
               </span>
@@ -233,8 +333,11 @@
           <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="visible">
               <span slot="label">
-                <el-tooltip content="选择隐藏则路由将不会出现在侧边栏，但仍然可以访问" placement="top">
-                <i class="el-icon-question"></i>
+                <el-tooltip
+                  content="选择隐藏则路由将不会出现在侧边栏，但仍然可以访问"
+                  placement="top"
+                >
+                  <i class="el-icon-question"></i>
                 </el-tooltip>
                 显示状态
               </span>
@@ -243,15 +346,19 @@
                   v-for="dict in dict.type.sys_show_hide"
                   :key="dict.value"
                   :label="dict.value"
-                >{{dict.label}}</el-radio>
+                  >{{ dict.label }}</el-radio
+                >
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.projectType != 'F'">
             <el-form-item prop="status">
               <span slot="label">
-                <el-tooltip content="选择停用则路由将不会出现在侧边栏，也不能被访问" placement="top">
-                <i class="el-icon-question"></i>
+                <el-tooltip
+                  content="选择停用则路由将不会出现在侧边栏，也不能被访问"
+                  placement="top"
+                >
+                  <i class="el-icon-question"></i>
                 </el-tooltip>
                 项目状态
               </span>
@@ -260,31 +367,38 @@
                   v-for="dict in dict.type.sys_normal_disable"
                   :key="dict.value"
                   :label="dict.value"
-                >{{dict.label}}</el-radio>
+                  >{{ dict.label }}</el-radio
+                >
               </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
+
+      <!-- 表单底部 -->
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-
-
   </div>
 </template>
 
 <script>
-import { listProject, getProject, delProject, addProject, updateProject } from "@/api/system/project";
+import {
+  listProject,
+  getProject,
+  delProject,
+  addProject,
+  updateProject,
+} from "@/api/system/project";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import IconSelect from "@/components/IconSelect";
 
 export default {
   name: "Project",
-  dicts: ['sys_show_hide', 'sys_normal_disable'],
+  dicts: ["sys_show_hide", "sys_normal_disable"],
   components: { Treeselect, IconSelect },
   data() {
     return {
@@ -292,10 +406,10 @@ export default {
       loading: true,
       // 显示搜索条件
       showSearch: true,
-      // 项目表格树数据
+      // 项目表格数据
       projectList: [],
-      // 项目树选项
-      projectOptions: [],
+      // 团队选项
+      teamOptions: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -307,22 +421,22 @@ export default {
       // 查询参数
       queryParams: {
         projectName: undefined,
-        visible: undefined
+        visible: undefined,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
         projectName: [
-          { required: true, message: "项目名称不能为空", trigger: "blur" }
+          { required: true, message: "项目名称不能为空", trigger: "blur" },
         ],
         orderNum: [
-          { required: true, message: "项目顺序不能为空", trigger: "blur" }
+          { required: true, message: "项目顺序不能为空", trigger: "blur" },
         ],
         path: [
-          { required: true, message: "路由地址不能为空", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "路由地址不能为空", trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
@@ -336,7 +450,7 @@ export default {
     /** 查询项目列表 */
     getList() {
       this.loading = true;
-      listProject(this.queryParams).then(response => {
+      listProject(this.queryParams).then((response) => {
         this.projectList = this.handleTree(response.data, "projectId");
         this.loading = false;
       });
@@ -349,18 +463,18 @@ export default {
       return {
         id: node.projectId,
         label: node.projectName,
-        children: node.children
+        children: node.children,
       };
     },
     /** 查询项目下拉树结构 */
-    getTreeselect() {
-      listProject().then(response => {
-        this.projectOptions = [];
-        const project = { projectId: 0, projectName: '主类目', children: [] };
-        project.children = this.handleTree(response.data, "projectId");
-        this.projectOptions.push(project);
+    getSelect() {
+      listTeam().then((response) => {
+
+        this.projectOptions.push(response.data);
       });
+
     },
+
     // 取消按钮
     cancel() {
       this.open = false;
@@ -370,7 +484,7 @@ export default {
     reset() {
       this.form = {
         projectId: undefined,
-        parentId: 0,
+        // parentId: 0,
         projectName: undefined,
         icon: undefined,
         projectType: "M",
@@ -378,7 +492,7 @@ export default {
         isFrame: "1",
         isCache: "0",
         visible: "0",
-        status: "0"
+        status: "0",
       };
       this.resetForm("form");
     },
@@ -392,13 +506,13 @@ export default {
       this.handleQuery();
     },
     /** 新增按钮操作 */
-    handleAdd(row) {
+    handleAdd() {
       this.reset();
-      this.getTreeselect();
-      if (row != null && row.projectId) {
-        this.form.parentId = row.projectId;
+      this.getSelect();
+      if (row != null && row.teamId) {
+        this.form.projectId = row.projectId;
       } else {
-        this.form.parentId = 0;
+        this.form.projectId = 0;
       }
       this.open = true;
       this.title = "添加项目";
@@ -415,24 +529,24 @@ export default {
     handleUpdate(row) {
       this.reset();
       this.getTreeselect();
-      getProject(row.projectId).then(response => {
+      getProject(row.projectId).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改项目";
       });
     },
     /** 提交按钮 */
-    submitForm: function() {
-      this.$refs["form"].validate(valid => {
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.projectId != undefined) {
-            updateProject(this.form).then(response => {
+            updateProject(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addProject(this.form).then(response => {
+            addProject(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -443,13 +557,17 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      this.$modal.confirm('是否确认删除名称为"' + row.projectName + '"的数据项？').then(function() {
-        return delProject(row.projectId);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
-    }
-  }
+      this.$modal
+        .confirm('是否确认删除名称为"' + row.projectName + '"的数据项？')
+        .then(function () {
+          return delProject(row.projectId);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {});
+    },
+  },
 };
 </script>
