@@ -64,7 +64,7 @@
           <svg-icon :icon-class="scope.row.icon" />
         </template>
       </el-table-column> -->
-      <el-table-column prop="orderNum" label="简介" :show-overflow-tooltip="true" width="60"></el-table-column>
+      <el-table-column prop="projectContent" label="简介"  width="60"></el-table-column>
       <!-- <el-table-column prop="perms" label="权限标识" :show-overflow-tooltip="true"></el-table-column> -->
       <!-- <el-table-column prop="component" label="组件路径" :show-overflow-tooltip="true"></el-table-column> -->
       <el-table-column prop="status" label="状态" width="80"></el-table-column>
