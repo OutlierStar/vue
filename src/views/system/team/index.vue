@@ -167,7 +167,7 @@ export default {
       showSearch: true,
       // 表格树数据
       teamList: [],
-      // 部门树选项
+      // 团队树选项
       teamOptions: [],
       // 弹出层标题
       title: "",
@@ -267,9 +267,9 @@ export default {
         this.form.parentId = row.teamId;
       }
       this.open = true;
-      this.title = "添加部门";
+      this.title = "添加团队";
       listTeam().then(response => {
-        this.teamOptions = this.handleTree(response.data, "teamId");
+        this.teamOptions = this.handleTree(response.data.team, "teamId");
       });
     },
     /** 展开/折叠操作 */
@@ -284,11 +284,11 @@ export default {
     handleUpdate(row) {
       this.reset();
       getTeam(row.teamId).then(response => {
-        this.form = response.data;
+        this.form = response.data.team;
         this.open = true;
         this.title = "修改团队";
         listTeamExcludeChild(row.teamId).then(response => {
-          this.teamOptions = this.handleTree(response.data, "teamId");
+          this.teamOptions = this.handleTree(response.data.team, "teamId");
           if (this.teamOptions.length == 0) {
             const noResultsOptions = { teamId: this.form.parentId, teamName: this.form.parentName, children: [] };
             this.teamOptions.push(noResultsOptions);
