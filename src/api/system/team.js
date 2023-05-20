@@ -9,13 +9,6 @@ export function listTeam(query) {
   })
 }
 
-// 查询团队列表（排除节点）
-export function listTeamExcludeChild(teamId) {
-  return request({
-    url: '/system/team/list/exclude/' + teamId,
-    method: 'get'
-  })
-}
 
 // 查询团队详细
 export function getTeam(teamId) {
