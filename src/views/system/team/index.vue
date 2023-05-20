@@ -56,6 +56,7 @@
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
+      <el-table-column prop="teamId" label="团队ID" width="260"></el-table-column>
       <el-table-column prop="teamName" label="团队名称" width="260"></el-table-column>
       <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
       <el-table-column prop="status" label="状态" width="100">
@@ -100,6 +101,11 @@
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
+          <el-col :span="12">
+            <el-form-item label="团队ID" prop="teamId">
+              <el-input v-model="form.teamId" placeholder="请输入团队ID" />
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="团队名称" prop="teamName">
               <el-input v-model="form.teamName" placeholder="请输入团队名称" />
@@ -151,7 +157,7 @@
 </template>
 
 <script>
-import { listTeam, getTeam, delTeam, addTeam, updateTeam, listTeamExcludeChild } from "@/api/system/team";
+import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -186,8 +192,11 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        teamId:[{
+          required: true, message: "团队ID不能为空", trigger: "blur" 
+        }],
         teamName: [
-          { required: true, message: "部门名称不能为空", trigger: "blur" }
+          { required: true, message: "团队名称不能为空", trigger: "blur" }
         ],
         orderNum: [
           { required: true, message: "显示排序不能为空", trigger: "blur" }
@@ -241,7 +250,6 @@ export default {
     reset() {
       this.form = {
         teamId: undefined,
-        parentId: undefined,
         teamName: undefined,
         orderNum: undefined,
         leader: undefined,
@@ -287,13 +295,7 @@ export default {
         this.form = response.data.team;
         this.open = true;
         this.title = "修改团队";
-        listTeamExcludeChild(row.teamId).then(response => {
-          this.teamOptions = this.handleTree(response.data.team, "teamId");
-          if (this.teamOptions.length == 0) {
-            const noResultsOptions = { teamId: this.form.parentId, teamName: this.form.parentName, children: [] };
-            this.teamOptions.push(noResultsOptions);
-          }
-        });
+        
       });
     },
     /** 提交按钮 */
