@@ -217,7 +217,7 @@ export default {
     getList() {
       this.loading = true;
       listTeam(this.queryParams).then((response) => {
-        this.teamList = this.handleTree(response.data, "teamId");
+        this.teamList = this.handleTree(response.data.teams, "teamId");
         this.loading = false;
       });
     },
