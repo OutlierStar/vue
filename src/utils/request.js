@@ -57,7 +57,7 @@ service.interceptors.request.use(config => {
       } else {
         cache.session.setJSON('sessionObj', requestObj)
       }
-    }
+    } 
   }
   return config
 }, error => {
