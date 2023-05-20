@@ -303,8 +303,6 @@ export default {
       deptOptions: [],
       // 查询参数
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
         roleName: undefined,
         roleKey: undefined,
         status: undefined
