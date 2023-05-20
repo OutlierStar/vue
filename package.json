@@ -2,7 +2,7 @@
   "name": "ruoyi",
   "version": "3.8.5",
   "description": "敏捷开发管理平台",
-  "author": "若依",
+  "author": "author",
   "license": "MIT",
   "scripts": {
     "serve": "set NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
