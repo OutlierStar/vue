@@ -66,8 +66,18 @@
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column prop="teamId" label="团队ID" width="100"></el-table-column>
-      <el-table-column prop="teamName" label="团队名称" width="200"></el-table-column>
+      <el-table-column prop="teamId" label="团队编号" width="100"></el-table-column>
+      <el-table-column prop="teamName" label="团队名称" width="100"></el-table-column>
+      <el-table-column label="状态" align="center" width="200">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
+        </template>
+      </el-table-column>
       <el-table-column prop="leaderId" label="负责人" width="200"></el-table-column>
       <el-table-column prop="phone" label="电话" width="200"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
@@ -113,8 +123,16 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="负责人" prop="leader">
-              <el-input v-model="form.leaderId" placeholder="请输入负责人" maxlength="20" />
+            <el-form-item label="选负责人" prop="leaderId">
+              <el-select v-model="form.leaderId" placeholder="请选择">
+                <el-option
+                  v-for="item in leaderOptions"
+                  :key="item.userId"
+                  :label="item.userId"
+                  :value="item.userId"
+                >
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -141,6 +159,7 @@
 
 <script>
 import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
+import { listUser } from "@/api/system/user";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -200,6 +219,7 @@ export default {
   },
   created() {
     this.getList();
+    this.getUserList();
   },
   methods: {
     /** 查询团队列表 */
@@ -207,6 +227,27 @@ export default {
       this.loading = true;
       listTeam(this.queryParams).then((response) => {
         this.teamList = this.handleTree(response.data.teams, "teamId");
+        this.loading = false;
+      });
+    },
+
+    // 团队状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal.confirm('确认要"' + text + '""' + row.teamName + '"团队吗？').then(function() {
+        return changeUserStatus(row.teamId, row.status);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function() {
+        row.status = row.status === "0" ? "1" : "0";
+      });
+    },
+
+    /** 查询用户列表 */
+    getUserList() {
+      this.loading = true;
+      listUser(this.queryParams).then((response) => {
+        this.leaderOptions = this.handleTree(response.data.users, "userId");
         this.loading = false;
       });
     },
@@ -225,7 +266,8 @@ export default {
         leader: undefined,
         phone: undefined,
         email: undefined,
-        status: "0"
+        status: "0",
+        leaderId: undefined
       };
       this.resetForm("form");
     },

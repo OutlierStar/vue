@@ -46,18 +46,6 @@
 
     <!-- 表上的新增 -->
     <el-row :gutter="10" class="mb8">
-      <!-- 新增 -->
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:project:add']"
-          >新增</el-button
-        >
-      </el-col>
 
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -77,7 +65,7 @@
       <el-table-column
         prop="projectId"
         label="项目id"
-        width="160"
+        width="100"
       ></el-table-column>
       <el-table-column
         prop="projectName"
@@ -85,27 +73,32 @@
         :show-overflow-tooltip="true"
         width="160"
       ></el-table-column>
-      <!-- <el-table-column prop="icon" label="图标" align="center" width="100">
-        <template slot-scope="scope">
-          <svg-icon :icon-class="scope.row.icon" />
-        </template>
-      </el-table-column> -->
       <el-table-column
         prop="projectContent"
         label="简介"
         :show-overflow-tooltip="true"
-        width="60"
+        width="160"
       ></el-table-column>
-      <!-- <el-table-column prop="perms" label="权限标识" :show-overflow-tooltip="true"></el-table-column> -->
-      <!-- <el-table-column prop="component" label="组件路径" :show-overflow-tooltip="true"></el-table-column> -->
-      <!-- <el-table-column prop="status" label="状态" width="80"></el-table-column> -->
-
-      <el-table-column prop="status" label="状态" width="80">
+      <el-table-column
+        prop="leaderId"
+        label="负责人"
+        :show-overflow-tooltip="true"
+        width="160"
+      ></el-table-column>
+      <el-table-column
+        prop="phone"
+        label="电话"
+        :show-overflow-tooltip="true"
+        width="160"
+      ></el-table-column>
+      <el-table-column prop="status" label="状态" width="80" align="center">
         <template slot-scope="scope">
-          <dict-tag
-            :options="dict.type.sys_normal_disable"
-            :value="scope.row.status"
-          />
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
 
@@ -126,7 +119,6 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:project:edit']"
             >修改</el-button
           >
           <el-button
@@ -134,7 +126,6 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:project:remove']"
             >删除</el-button
           >
         </template>
@@ -160,62 +151,6 @@
               </el-select>
             </el-form-item>
           </el-col>
-
-          <!-- 显示顺序 -->
-          <el-col :span="12">
-            <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number
-                v-model="form.orderNum"
-                controls-position="right"
-                :min="0"
-              />
-            </el-form-item>
-          </el-col>
-          <!-- <el-col :span="24">
-            <el-form-item label="项目类型" prop="projectType">
-              <el-radio-group v-model="form.projectType">
-                <el-radio label="M">目录</el-radio>
-                <el-radio label="C">项目</el-radio>
-                <el-radio label="F">按钮</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col> -->
-
-          <!-- <el-col :span="24" v-if="form.projectType != 'F'">
-            <el-form-item label="项目图标" prop="icon">
-              <el-popover
-                placement="bottom-start"
-                width="460"
-                trigger="click"
-                @show="$refs['iconSelect'].reset()"
-              >
-                <IconSelect
-                  ref="iconSelect"
-                  @selected="selected"
-                  :active-icon="form.icon"
-                />
-                <el-input
-                  slot="reference"
-                  v-model="form.icon"
-                  placeholder="点击选择图标"
-                  readonly
-                >
-                  <svg-icon
-                    v-if="form.icon"
-                    slot="prefix"
-                    :icon-class="form.icon"
-                    style="width: 25px"
-                  />
-                  <i
-                    v-else
-                    slot="prefix"
-                    class="el-icon-search el-input__icon"
-                  />
-                </el-input>
-              </el-popover>
-            </el-form-item>
-          </el-col> -->
-
           <!-- 项目名称 -->
           <el-col :span="12">
             <el-form-item label="项目名称" prop="projectName">
@@ -236,25 +171,16 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-
-          <!-- <el-col :span="12" v-if="form.projectType != 'F'">
-            <el-form-item prop="isFrame">
-              <span slot="label">
-                <el-tooltip
-                  content="选择是外链则路由地址需要以`http(s)://`开头"
-                  placement="top"
-                >
-                  <i class="el-icon-question"></i>
-                </el-tooltip>
-                是否外链
-              </span>
-              <el-radio-group v-model="form.isFrame">
-                <el-radio label="0">是</el-radio>
-                <el-radio label="1">否</el-radio>
-              </el-radio-group>
+          <el-col :span="12">
+            <el-form-item label="创建时间" prop="createTime">
+              <el-date-picker
+                v-model="form.createTime"
+                type="datetime"
+                placeholder="选择创建时间"
+              >
+              </el-date-picker>
             </el-form-item>
-          </el-col> -->
-
+          </el-col>
           <el-col :span="12">
             <el-form-item label="项目状态" prop="status">
               <el-radio-group v-model="form.status">
@@ -277,8 +203,16 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item label="负责人" prop="leaderId">
-              <el-input v-model="form.leaderId" placeholder="请输入负责人" />
+            <el-form-item label="选择负责人" prop="leaderId">
+              <el-select v-model="form.leaderId" placeholder="请选择">
+                <el-option
+                  v-for="item in leaderOptions"
+                  :key="item.userId"
+                  :label="item.userId"
+                  :value="item.userId"
+                >
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
 
@@ -293,145 +227,6 @@
               <el-input v-model="form.email" placeholder="请输入联系邮箱" />
             </el-form-item>
           </el-col>
-
-          <!-- <el-col :span="12">
-            <el-form-item label="隐藏" prop="delFlag">
-              <el-radio-group v-model="form.delFlag">
-                <el-radio label="0">正常</el-radio>
-                <el-radio label="1">隐藏</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col> -->
-
-          <!-- <el-col :span="12" v-if="form.projectType != 'F'">
-            <el-form-item prop="path">
-              <span slot="label">
-                <el-tooltip
-                  content="访问的路由地址，如：`user`，如外网地址需内链访问则以`http(s)://`开头"
-                  placement="top"
-                >
-                  <i class="el-icon-question"></i>
-                </el-tooltip>
-                路由地址
-              </span>
-              <el-input v-model="form.path" placeholder="请输入路由地址" />
-            </el-form-item>
-          </el-col> -->
-
-          <!-- <el-col :span="12" v-if="form.projectType == 'C'">
-            <el-form-item prop="component">
-              <span slot="label">
-                <el-tooltip
-                  content="访问的组件路径，如：`system/user/index`，默认在`views`目录下"
-                  placement="top"
-                >
-                  <i class="el-icon-question"></i>
-                </el-tooltip>
-                组件路径
-              </span>
-              <el-input v-model="form.component" placeholder="请输入组件路径" />
-            </el-form-item>
-          </el-col> -->
-
-          <!-- <el-col :span="12" v-if="form.projectType != 'M'">
-            <el-form-item prop="perms">
-              <el-input
-                v-model="form.perms"
-                placeholder="请输入权限标识"
-                maxlength="100"
-              />
-              <span slot="label">
-                <el-tooltip
-                  content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)"
-                  placement="top"
-                >
-                  <i class="el-icon-question"></i>
-                </el-tooltip>
-                权限字符
-              </span>
-            </el-form-item>
-          </el-col> -->
-
-          <!-- <el-col :span="12" v-if="form.projectType == 'C'">
-            <el-form-item prop="query">
-              <el-input
-                v-model="form.query"
-                placeholder="请输入路由参数"
-                maxlength="255"
-              />
-              <span slot="label">
-                <el-tooltip
-                  content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`'
-                  placement="top"
-                >
-                  <i class="el-icon-question"></i>
-                </el-tooltip>
-                路由参数
-              </span>
-            </el-form-item>
-          </el-col> -->
-
-          <!-- <el-col :span="12" v-if="form.projectType == 'C'">
-            <el-form-item prop="isCache">
-              <span slot="label">
-                <el-tooltip
-                  content="选择是则会被`keep-alive`缓存，需要匹配组件的`name`和地址保持一致"
-                  placement="top"
-                >
-                  <i class="el-icon-question"></i>
-                </el-tooltip>
-                是否缓存
-              </span>
-              <el-radio-group v-model="form.isCache">
-                <el-radio label="0">缓存</el-radio>
-                <el-radio label="1">不缓存</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col> -->
-
-          <!-- <el-col :span="12" v-if="form.projectType != 'F'">
-            <el-form-item prop="visible">
-              <span slot="label">
-                <el-tooltip
-                  content="选择隐藏则路由将不会出现在侧边栏，但仍然可以访问"
-                  placement="top"
-                >
-                  <i class="el-icon-question"></i>
-                </el-tooltip>
-                显示状态
-              </span>
-              <el-radio-group v-model="form.visible">
-                <el-radio
-                  v-for="dict in dict.type.sys_show_hide"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
-              </el-radio-group>
-            </el-form-item>
-          </el-col> -->
-
-          <!-- <el-col :span="12" v-if="form.projectType != 'F'">
-            <el-form-item prop="status">
-              <span slot="label">
-                <el-tooltip
-                  content="选择停用则路由将不会出现在侧边栏，也不能被访问"
-                  placement="top"
-                >
-                  <i class="el-icon-question"></i>
-                </el-tooltip>
-                项目状态
-              </span>
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dict.type.sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
-              </el-radio-group>
-            </el-form-item>
-          </el-col> -->
         </el-row>
       </el-form>
 
@@ -454,6 +249,7 @@ import {
 } from "@/api/system/project";
 
 import { listTeam } from "@/api/system/team";
+import { listUser } from "@/api/system/user";
 
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import IconSelect from "@/components/IconSelect";
@@ -472,6 +268,8 @@ export default {
       projectList: [],
       // 团队选项
       teamOptions: [],
+      // 负责人选项
+      leaderOptions: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -492,49 +290,55 @@ export default {
         projectName: [
           { required: true, message: "项目名称不能为空", trigger: "blur" },
         ],
-        // orderNum: [
-        //   { required: true, message: "项目顺序不能为空", trigger: "blur" },
-        // ],
-        // path: [
-        //   { required: true, message: "路由地址不能为空", trigger: "blur" },
-        // ],
       },
     };
   },
   created() {
     this.getList();
+    this.getTeamList()
+    this.getUserList()
   },
   methods: {
-    // 选择图标
-    selected(name) {
-      this.form.icon = name;
-    },
+   
     /** 查询项目列表 */
     getList() {
       this.loading = true;
       listProject(this.queryParams).then((response) => {
-        this.projectList = this.handleTree(response.data, "projectId");
+        this.projectList = this.handleTree(response.data.projects, "projectId");
         this.loading = false;
       });
     },
-    /** 转换项目数据结构 */
-    normalizer(node) {
-      if (node.children && !node.children.length) {
-        delete node.children;
-      }
-      return {
-        id: node.projectId,
-        label: node.projectName,
-        children: node.children,
-      };
-    },
-    /** 查询项目下拉树结构 */
-    getSelect() {
-      listTeam().then((response) => {
-        this.teamOptions = [];
-        this.teamOptions = response.data;
+
+    // 项目状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal.confirm('确认要"' + text + '""' + row.projectName + '"项目吗？').then(function() {
+        return changeUserStatus(row.projectId, row.status);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function() {
+        row.status = row.status === "0" ? "1" : "0";
       });
     },
+
+    /** 查询团队列表 */
+    getTeamList() {
+      this.loading = true;
+      listTeam(this.queryParams).then((response) => {
+        this.teamOptions = this.handleTree(response.data.teams, "teamId");
+        this.loading = false;
+      });
+    },
+
+    /** 查询用户列表 */
+    getUserList() {
+      this.loading = true;
+      listUser(this.queryParams).then((response) => {
+        this.leaderOptions = this.handleTree(response.data.users, "userId");
+        this.loading = false;
+      });
+    },
+  
 
     // 取消按钮
     cancel() {
@@ -547,7 +351,11 @@ export default {
         projectId: undefined,
         projectName: undefined,
         orderNum: undefined,
+        teamId: undefined,
+        createTime: undefined,
         status: "0",
+        userId: undefined,
+        leaderId: undefined
       };
       this.resetForm("form");
     },
@@ -560,14 +368,7 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.getSelect();
-
-      this.open = true;
-      this.title = "添加项目";
-    },
+    
     /** 展开/折叠操作 */
     toggleExpandAll() {
       this.refreshTable = false;
@@ -579,9 +380,8 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      this.getSelect();
       getProject(row.projectId).then((response) => {
-        this.form = response.data;
+        this.form = response.data.project;
         this.open = true;
         this.title = "修改项目";
       });
@@ -596,13 +396,14 @@ export default {
               this.open = false;
               this.getList();
             });
-          } else {
-            addProject(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
           }
+          //  else {
+          //   addProject(this.form).then((response) => {
+          //     this.$modal.msgSuccess("新增成功");
+          //     this.open = false;
+          //     this.getList();
+          //   });
+          // }
         }
       });
     },

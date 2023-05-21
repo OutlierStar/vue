@@ -377,7 +377,7 @@ export default {
     
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
+      7
       this.open = true;
       this.title = "添加角色";
     },
