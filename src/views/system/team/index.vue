@@ -33,8 +33,17 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:team:add']"
         >新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          
+          @click="handleDelete(scope.row)"
+        >删除</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -56,19 +65,12 @@
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="teamId" label="团队ID" width="260"></el-table-column>
-      <el-table-column prop="teamName" label="团队名称" width="260"></el-table-column>
-      <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="200">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column prop="teamId" label="团队ID" width="100"></el-table-column>
+      <el-table-column prop="teamName" label="团队名称" width="200"></el-table-column>
+      <el-table-column prop="leaderId" label="负责人" width="200"></el-table-column>
+      <el-table-column prop="phone" label="电话" width="200"></el-table-column>
+      <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -76,14 +78,12 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:team:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-plus"
             @click="handleAdd(scope.row)"
-            v-hasPermi="['system:team:add']"
           >新增</el-button>
           <el-button
             v-if="scope.row.parentId != 0"
@@ -91,7 +91,6 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:team:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -103,7 +102,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="团队ID" prop="teamId">
-              <el-input v-model="form.teamId" placeholder="请输入团队ID" />
+              <el-input v-model="form.teamId" placeholder="团队ID自动生成" disabled/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -111,16 +110,11 @@
               <el-input v-model="form.teamName" placeholder="请输入团队名称" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
-            </el-form-item>
-          </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="负责人" prop="leader">
-              <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />
+              <el-input v-model="form.leaderId" placeholder="请输入负责人" maxlength="20" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -133,17 +127,6 @@
           <el-col :span="12">
             <el-form-item label="邮箱" prop="email">
               <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="团队状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dict.type.sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{dict.label}}</el-radio>
-              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
@@ -191,15 +174,12 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-        teamId:[{
-          required: true, message: "团队ID不能为空", trigger: "blur" 
-        }],
+      rules: {  
         teamName: [
           { required: true, message: "团队名称不能为空", trigger: "blur" }
         ],
-        orderNum: [
-          { required: true, message: "显示排序不能为空", trigger: "blur" }
+        leaderId: [
+          { required: true, message: "必须为某用户ID", trigger: "blur" }
         ],
         email: [
           {
@@ -222,7 +202,7 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询部门列表 */
+    /** 查询团队列表 */
     getList() {
       this.loading = true;
       listTeam(this.queryParams).then((response) => {
@@ -230,17 +210,7 @@ export default {
         this.loading = false;
       });
     },
-    /** 转换部门数据结构 */
-    normalizer(node) {
-      if (node.children && !node.children.length) {
-        delete node.children;
-      }
-      return {
-        id: node.teamId,
-        label: node.teamName,
-        children: node.children
-      };
-    },
+    
     // 取消按钮
     cancel() {
       this.open = false;

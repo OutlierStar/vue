@@ -28,7 +28,7 @@ export function treeselect() {
 // 根据角色ID查询项目下拉树结构
 export function roleProjectTreeselect(roleId) {
   return request({
-    url: '/system/project/roleProjectTreeselect/' + roleId,
+    url: '/system/project/roleProject/Treeselect/' + roleId,
     method: 'get'
   })
 }
