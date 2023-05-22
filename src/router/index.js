@@ -75,6 +75,32 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/system',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'require/:projectId(\\d+)',
+        component: () => import('@/views/system/requires/index'),
+        name: 'require',
+        meta: { title: '需求管理', activeMenu: '/system/project' }
+      }
+    ]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'task/:requireId(\\d+)',
+        component: () => import('@/views/system/task/index'),
+        name: 'task',
+        meta: { title: '任务管理', activeMenu: '/system/project' }
+      }
+    ]
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',

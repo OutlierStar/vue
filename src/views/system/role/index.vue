@@ -105,7 +105,7 @@
       </el-table-column>
       <el-table-column label="备注" prop="remark" width="100" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope" v-if="scope.row.roleId !== 1">
+        <template slot-scope="scope">
           <el-button
             size="mini"
             type="text"
@@ -213,7 +213,6 @@
 
 <script>
 import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role";
-import { treeselect as projectTreeselect, roleProjectTreeselect } from "@/api/system/project";
 
 export default {
   name: "Role",
@@ -390,7 +389,6 @@ export default {
     
     /** 新增按钮操作 */
     handleAdd() {
-      7
       this.open = true;
       this.title = "添加角色";
     },

@@ -106,7 +106,7 @@ export default {
     /** 进入操作 */
     handleEnter: function(row) {
         const projectId = row.projectId;
-        this.$router.push("/system/project");
+        this.$router.push("/system/require/"+projectId);
         },
     goTarget() {
        this.$router.push("/system/iterate");
