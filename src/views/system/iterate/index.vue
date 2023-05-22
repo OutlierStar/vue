@@ -211,7 +211,7 @@
                 <el-option
                   v-for="item in leaderOptions"
                   :key="item.userId"
-                  :label="item.userId"
+                  :label="item.nickName"
                   :value="item.userId"
                 >
                 </el-option>

@@ -326,13 +326,6 @@ export default {
    
     // 表单重置
     reset() {
-      if (this.$refs.project != undefined) {
-        this.$refs.project.setCheckedKeys([]);
-      }
-      this.projectExpand = false,
-      this.projectNodeAll = false,
-      this.deptExpand = true,
-      this.deptNodeAll = false,
       this.form = {
         roleId: undefined,
         roleName: undefined,
@@ -389,6 +382,7 @@ export default {
     
     /** 新增按钮操作 */
     handleAdd() {
+      this.reset();
       this.open = true;
       this.title = "添加角色";
     },

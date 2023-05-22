@@ -250,7 +250,7 @@
                 <el-option
                   v-for="item in leaderOptions"
                   :key="item.userId"
-                  :label="item.userId"
+                  :label="item.nickName"
                   :value="item.userId"
                 >
                 </el-option>
@@ -344,7 +344,14 @@ export default {
     /** 进入操作 */
     handleEnter: function(row) {
         const requireId = row.requireId;
-        this.$router.push("/system/task/"+requireId);
+        this.$router.push({
+          name:'task',
+          params:{
+            requireId:requireId,
+            projectId:this.$route.params.projectId
+          }
+        });
+        // this.$router.push('/system/task/'+this.$route.params.projectId)
         },
 
     /** 查询需求列表 */

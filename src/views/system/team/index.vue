@@ -131,9 +131,9 @@
             <el-form-item label="选负责人" prop="leaderId">
               <el-select v-model="form.leaderId" placeholder="请选择">
                 <el-option
-                  v-for="item in leaderOptions"
+                  v-for="item in leaderList"
                   :key="item.userId"
-                  :label="item.userId"
+                  :label="item.nickName"
                   :value="item.userId"
                 >
                 </el-option>
@@ -198,6 +198,7 @@ export default {
       showSearch: true,
       // 表格树数据
       teamList: [],
+      leaderList:[],
       // 团队树选项
       teamOptions: [],
       // 弹出层标题
@@ -270,7 +271,7 @@ export default {
     getUserList() {
       this.loading = true;
       listUser(this.queryParams).then((response) => {
-        this.leaderOptions = this.handleTree(response.data.users, "userId");
+        this.leaderList = this.handleTree(response.data.users, "userId");
         this.loading = false;
       });
     },
