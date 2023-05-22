@@ -72,8 +72,8 @@ export default {
     return {
       codeUrl: "",
       loginForm: {
-        username: "admin",
-        password: "admin123",
+        username: "",
+        password: "",
         rememberMe: false,
         code: "",
         uuid: ""
@@ -104,19 +104,11 @@ export default {
     }
   },
   created() {
-    this.getCode();
+    
     this.getCookie();
   },
   methods: {
-    getCode() {
-      getCodeImg().then(res => {
-        this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled;
-        if (this.captchaEnabled) {
-          this.codeUrl = "data:image/gif;base64," + res.img;
-          this.loginForm.uuid = res.uuid;
-        }
-      });
-    },
+    
     getCookie() {
       const username = Cookies.get("username");
       const password = Cookies.get("password");

@@ -30,12 +30,12 @@ function install() {
             return new Promise(resolve => { resolve(storeDict) })
           } else {
             return new Promise((resolve, reject) => {
-              getDicts(dictMeta.type).then(res => {
-                store.dispatch('dict/setDict', { key: dictMeta.type, value: res.data })
-                resolve(res.data)
-              }).catch(error => {
-                reject(error)
-              })
+              // getDicts(dictMeta.type).then(res => {
+              //   store.dispatch('dict/setDict', { key: dictMeta.type, value: res.data })
+              //   resolve(res.data)
+              // }).catch(error => {
+              //   reject(error)
+              // })
             })
           }
         },

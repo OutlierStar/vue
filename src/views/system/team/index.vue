@@ -37,6 +37,16 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          
+          @click="handleDelete(scope.row)"
+        >删除</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
           type="info"
           plain
           icon="el-icon-sort"
@@ -55,15 +65,23 @@
       :default-expand-all="isExpandAll"
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="teamId" label="团队ID" width="260"></el-table-column>
-      <el-table-column prop="teamName" label="团队名称" width="260"></el-table-column>
-      <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column prop="teamId" label="团队编号" width="100"></el-table-column>
+      <el-table-column prop="teamName" label="团队名称" width="100"></el-table-column>
+      <el-table-column label="状态" align="center" width="140">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status"/>
+          <el-switch
+            v-model="scope.row.status"
+            active-value="0"
+            inactive-value="1"
+            @change="handleStatusChange(scope.row)"
+          ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="200">
+      <el-table-column prop="leaderId" label="负责人" width="140"></el-table-column>
+      <el-table-column prop="phone" label="电话" width="140"></el-table-column>
+      <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+      <el-table-column label="创建时间" align="center" prop="createTime">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
@@ -75,14 +93,12 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:team:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-plus"
             @click="handleAdd(scope.row)"
-            v-hasPermi="['system:team:add']"
           >新增</el-button>
           <el-button
             v-if="scope.row.parentId != 0"
@@ -90,7 +106,6 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:team:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -102,7 +117,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="团队ID" prop="teamId">
-              <el-input v-model="form.teamId" placeholder="请输入团队ID" />
+              <el-input v-model="form.teamId" placeholder="团队ID自动生成" disabled/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -110,16 +125,19 @@
               <el-input v-model="form.teamName" placeholder="请输入团队名称" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
-            </el-form-item>
-          </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="负责人" prop="leader">
-              <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />
+            <el-form-item label="选负责人" prop="leaderId">
+              <el-select v-model="form.leaderId" placeholder="请选择">
+                <el-option
+                  v-for="item in leaderOptions"
+                  :key="item.userId"
+                  :label="item.userId"
+                  :value="item.userId"
+                >
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -130,22 +148,29 @@
         </el-row>
         <el-row>
           <el-col :span="12">
+              <el-form-item label="项目状态" prop="status">
+                <el-radio-group v-model="form.status">
+                  <el-radio label="0">正常</el-radio>
+                  <el-radio label="1">完结</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          <el-col :span="12">
             <el-form-item label="邮箱" prop="email">
               <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="团队状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dict.type.sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{dict.label}}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
         </el-row>
+        <el-col :span="12">
+              <el-form-item label="创建时间" prop="createTime">
+                <el-date-picker
+                  v-model="form.createTime"
+                  type="datetime"
+                  placeholder="选择创建时间"
+                >
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -157,6 +182,7 @@
 
 <script>
 import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
+import { listUser } from "@/api/system/user";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -190,15 +216,12 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-        teamId:[{
-          required: true, message: "团队ID不能为空", trigger: "blur" 
-        }],
+      rules: {  
         teamName: [
           { required: true, message: "团队名称不能为空", trigger: "blur" }
         ],
-        orderNum: [
-          { required: true, message: "显示排序不能为空", trigger: "blur" }
+        leaderId: [
+          { required: true, message: "必须为某用户ID", trigger: "blur" }
         ],
         email: [
           {
@@ -219,9 +242,10 @@ export default {
   },
   created() {
     this.getList();
+    this.getUserList();
   },
   methods: {
-    /** 查询部门列表 */
+    /** 查询团队列表 */
     getList() {
       this.loading = true;
       listTeam(this.queryParams).then((response) => {
@@ -229,17 +253,28 @@ export default {
         this.loading = false;
       });
     },
-    /** 转换部门数据结构 */
-    normalizer(node) {
-      if (node.children && !node.children.length) {
-        delete node.children;
-      }
-      return {
-        id: node.teamId,
-        label: node.teamName,
-        children: node.children
-      };
+
+    // 团队状态修改
+    handleStatusChange(row) {
+      let text = row.status === "0" ? "启用" : "停用";
+      this.$modal.confirm('确认要"' + text + '""' + row.teamName + '"团队吗？').then(function() {
+        return changeUserStatus(row.teamId, row.status);
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+      }).catch(function() {
+        row.status = row.status === "0" ? "1" : "0";
+      });
     },
+
+    /** 查询用户列表 */
+    getUserList() {
+      this.loading = true;
+      listUser(this.queryParams).then((response) => {
+        this.leaderOptions = this.handleTree(response.data.users, "userId");
+        this.loading = false;
+      });
+    },
+    
     // 取消按钮
     cancel() {
       this.open = false;
@@ -254,7 +289,8 @@ export default {
         leader: undefined,
         phone: undefined,
         email: undefined,
-        status: "0"
+        status: "0",
+        leaderId: undefined
       };
       this.resetForm("form");
     },

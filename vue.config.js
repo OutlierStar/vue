@@ -35,8 +35,8 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        // target: `http://localhost:17359`,
-        target: `https://mock.apifox.cn/m1/2701362-0-default`,
+        target: `http://localhost:17357`,
+        // target: `https://mock.apifox.cn/m1/2701362-0-default`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''

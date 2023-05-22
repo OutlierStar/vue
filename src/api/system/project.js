@@ -12,7 +12,7 @@ export function listProject(query) {
 // 查询项目详细
 export function getProject(projectId) {
   return request({
-    url: '/system/project/?projectId=' + projectId,
+    url: '/system/project/' + projectId,
     method: 'get'
   })
 }
@@ -28,7 +28,7 @@ export function treeselect() {
 // 根据角色ID查询项目下拉树结构
 export function roleProjectTreeselect(roleId) {
   return request({
-    url: '/system/project/roleProjectTreeselect/' + roleId,
+    url: '/system/project/roleProject/Treeselect/' + roleId,
     method: 'get'
   })
 }
