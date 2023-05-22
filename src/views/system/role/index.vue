@@ -145,7 +145,20 @@
         </el-form-item>
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" />
+        </el-form-item><el-form-item label="创建时间" prop="createTime">
+          <el-date-picker
+            v-model="form.createTime"
+            type="datetime"
+            placeholder="选择创建时间"
+          >
+         </el-date-picker>
         </el-form-item>
+              <el-form-item label="项目状态" prop="status">
+                <el-radio-group v-model="form.status">
+                  <el-radio label="0">正常</el-radio>
+                  <el-radio label="1">完结</el-radio>
+                </el-radio-group>
+              </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
         </el-form-item>

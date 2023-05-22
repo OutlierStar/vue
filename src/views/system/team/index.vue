@@ -68,7 +68,7 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column prop="teamId" label="团队编号" width="100"></el-table-column>
       <el-table-column prop="teamName" label="团队名称" width="100"></el-table-column>
-      <el-table-column label="状态" align="center" width="200">
+      <el-table-column label="状态" align="center" width="140">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -78,9 +78,14 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column prop="leaderId" label="负责人" width="200"></el-table-column>
-      <el-table-column prop="phone" label="电话" width="200"></el-table-column>
-      <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
+      <el-table-column prop="leaderId" label="负责人" width="140"></el-table-column>
+      <el-table-column prop="phone" label="电话" width="140"></el-table-column>
+      <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+      <el-table-column label="创建时间" align="center" prop="createTime">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -143,11 +148,29 @@
         </el-row>
         <el-row>
           <el-col :span="12">
+              <el-form-item label="项目状态" prop="status">
+                <el-radio-group v-model="form.status">
+                  <el-radio label="0">正常</el-radio>
+                  <el-radio label="1">完结</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          <el-col :span="12">
             <el-form-item label="邮箱" prop="email">
               <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
             </el-form-item>
           </el-col>
         </el-row>
+        <el-col :span="12">
+              <el-form-item label="创建时间" prop="createTime">
+                <el-date-picker
+                  v-model="form.createTime"
+                  type="datetime"
+                  placeholder="选择创建时间"
+                >
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
