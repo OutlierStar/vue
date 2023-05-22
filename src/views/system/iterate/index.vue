@@ -367,7 +367,7 @@ import { listUser } from "@/api/system/user";
       /** 进入操作 */
       handleEnter: function(row) {
         const projectId = row.projectId;
-        this.$router.push("/system/iterate/project/" + projectId);
+        this.$router.push("/system/projectInfo/"+projectId);
         },
       /** 重置按钮操作 */
       resetQuery() {

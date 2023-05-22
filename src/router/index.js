@@ -62,6 +62,19 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/system',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'projectInfo/:projectId(\\d+)',
+        component: () => import('@/views/system/project/projectInfo'),
+        name: 'projectInfo',
+        meta: { title: '项目信息', activeMenu: '/system/project' }
+      }
+    ]
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',
