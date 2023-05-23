@@ -42,9 +42,9 @@
           <el-col :span="6">
             <h4>后端技术</h4>
             <ul>
-              <li>SpringBoot</li>
-              <li>MyBatis</li>
-              <li>Druid</li>
+              <li>Spring Boot</li>
+              <li>MyBatis Plus</li>
+              <li>nacos</li>
               <li>Fastjson</li>
               <li>...</li>
             </ul>
@@ -53,7 +53,7 @@
             <h4>前端技术</h4>
             <ul>
               <li>Vue</li>
-              <li>Element-ui</li>
+              <li>Element-UI</li>
               <li>Axios</li>
               <li>...</li>
             </ul>
