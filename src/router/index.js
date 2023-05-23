@@ -51,11 +51,11 @@ export const constantRoutes = [
     component: () => import('@/views/register'),
     hidden: true
   },
-  {
-    path: '/404',
-    component: () => import('@/views/error/404'),
-    hidden: true
-  },
+  // {
+  //   path: '/404',
+  //   component: () => import('@/views/error/404'),
+  //   hidden: true
+  // },
   {
     path: '/401',
     component: () => import('@/views/error/401'),
@@ -83,7 +83,7 @@ export const constantRoutes = [
         path: 'require/:projectId(\\d+)',
         component: () => import('@/views/system/requires/index'),
         name: 'require',
-        meta: { title: '需求管理', activeMenu: '/system/project' }
+        meta: { title: '需求管理', activeMenu: '/system/project' },
       }
     ]
   },
@@ -93,7 +93,7 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: 'task/:requireId(\\d+)',
+        path: 'task/:projectId/:requireId',
         component: () => import('@/views/system/task/index'),
         name: 'task',
         meta: { title: '任务管理', activeMenu: '/system/project' }

@@ -183,17 +183,24 @@
       <!-- 表单内容 -->
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-row>
-          <!-- 选择团队 -->
           <el-col :span="12">
-            <el-form-item label="项目ID" prop="requireId">
+            <el-form-item label="项目ID" prop="projectId">
               <el-input
-                v-model="form.requireId"
+                v-model="form.projectId"
                 placeholder="项目Id"
                 disabled
               />
             </el-form-item>
           </el-col>
-          <!-- 项目名称 -->
+          <el-col :span="12">
+            <el-form-item label="需求ID" prop="requireId">
+              <el-input
+                v-model="form.requireId"
+                placeholder="需求Id"
+                disabled
+              />
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="任务名称" prop="taskName">
               <el-input v-model="form.taskName" placeholder="请输入任务名称" />
@@ -221,7 +228,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="项目状态" prop="status">
+            <el-form-item label="任务状态" prop="status">
               <el-radio-group v-model="form.status">
                 <el-radio label="0">正常</el-radio>
                 <el-radio label="1">完结</el-radio>
@@ -230,7 +237,7 @@
           </el-col>
 
           <el-col :span="24">
-            <el-form-item label="项目简介" prop="taskContent">
+            <el-form-item label="任务简介" prop="taskContent">
               <el-input
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4 }"
@@ -247,7 +254,7 @@
                 <el-option
                   v-for="item in leaderOptions"
                   :key="item.userId"
-                  :label="item.userId"
+                  :label="item.nickName"
                   :value="item.userId"
                 >
                 </el-option>
@@ -334,6 +341,7 @@ export default {
   },
   created() {
     const requireId = this.$route.params && this.$route.params.requireId;
+    const projectId = this.$route.params && this.$route.params.projectId;
     this.getList(requireId);
     this.getUserList();
   },
@@ -346,7 +354,6 @@ export default {
 
     /** 查询任务列表 */
     getList(requireId) {
-      this.$router.push("/system/task/" + requireId);
       this.loading = true;
       listTaskById(requireId).then((response) => {
         this.taskList = response.data.tasks;
@@ -395,6 +402,7 @@ export default {
         overTime: undefined,
         phone: undefined,
         email: undefined,
+        projectId:undefined
       };
       this.resetForm("form");
     },
@@ -431,6 +439,7 @@ export default {
       this.open = true;
       this.title = "添加任务";
       this.form.requireId = this.$route.params.requireId;
+      this.form.projectId = this.$route.params.projectId;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
