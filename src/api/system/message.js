@@ -1,44 +1,44 @@
 import request from '@/utils/request'
 
 // 查询公告列表
-export function listNotice(query) {
+export function listMessage(query) {
   return request({
-    url: '/system/notice/list',
+    url: '/system/message/list',
     method: 'get',
     params: query
   })
 }
 
 // 查询公告详细
-export function getNotice(noticeId) {
+export function getMessage(messageId) {
   return request({
-    url: '/system/notice/' + noticeId,
+    url: '/system/message/' + messageId,
     method: 'get'
   })
 }
 
 // 新增公告
-export function addNotice(data) {
+export function addMessage(data) {
   return request({
-    url: '/system/notice',
+    url: '/system/message',
     method: 'post',
     data: data
   })
 }
 
 // 修改公告
-export function updateNotice(data) {
+export function updateMessage(data) {
   return request({
-    url: '/system/notice',
+    url: '/system/message',
     method: 'put',
     data: data
   })
 }
 
 // 删除公告
-export function delNotice(noticeId) {
+export function delMessage(messageId) {
   return request({
-    url: '/system/notice/' + noticeId,
+    url: '/system/message/' + messageId,
     method: 'delete'
   })
 }
