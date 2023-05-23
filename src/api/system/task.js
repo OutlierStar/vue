@@ -55,3 +55,11 @@ export function getTask(taskId) {
       method: 'delete'
     })
   }
+
+    // 根据projectId查询任务list
+    export function listTaskByProjectId(projectId) {
+      return request({
+        url: '/system/task?projectId=' + projectId,
+        method: 'get'
+      })
+    }

@@ -20,8 +20,8 @@ export function getMessage(messageId) {
 // 新增公告
 export function addMessage(data) {
   return request({
-    url: '/system/message',
-    method: 'post',
+    url: '/system/message/add',
+    method: 'put',
     data: data
   })
 }

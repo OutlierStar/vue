@@ -190,7 +190,7 @@
 
           <el-col :span="12">
             <el-form-item label="消息类型" prop="menuType">
-              <el-radio-group v-model="form.menuType">
+              <el-radio-group v-model="form.menuType"  >
                 <el-radio label="M">项目</el-radio>
                 <el-radio label="C">任务</el-radio>
                 <el-radio label="F">成员</el-radio>
@@ -199,8 +199,8 @@
           </el-col>
 
           <el-col :span="12" >
-            <el-form-item label="选择项目" filterable placeholder="请选择" prop="projectId">
-              <el-select v-model="form.projectId" @change="selectChange(form.projectId)" placeholder="请选择项目">
+            <el-form-item label="选择项目" placeholder="请选择" prop="projectId">
+              <el-select v-model="form.projectId" filterable @change="selectChange(form.projectId)" placeholder="请选择项目">
                 <el-option
                   v-for="project in projectOptions"
                   :key="project.projectName"
@@ -213,8 +213,7 @@
 
           <el-col :span="12" v-if="form.menuType == 'C'">
             <el-form-item label="选择任务" prop="taskId">
-              <el-select v-model="form.messageType" placeholder="请选择任务">
-
+              <el-select v-model="form.taskId" filterable placeholder="请选择任务">
                 <el-option
                   v-for="task in taskOptions"
                   :key="task.taskName"
@@ -228,12 +227,11 @@
 
           <el-col :span="12" v-if="form.menuType == 'F'">
             <el-form-item label="选择成员" prop="userId">
-              <el-select v-model="form.messageType" placeholder="请选择成员">
-
+              <el-select v-model="form.userId" filterable placeholder="请选择成员">
                 <el-option
                   v-for="user in userOptions"
                   :key="user.userName"
-                  :label="user.userName"
+                  :label="`${user.nickName}(${user.userName})`"
                   :value="user.userId"
                 />
 
@@ -312,7 +310,8 @@ import {
 } from "@/api/system/message";
 
 import { listProject, getProject } from "@/api/system/project";
-import { getTask } from "@/api/system/task";
+import { listTaskByProjectId } from "@/api/system/task";
+import { listUserByProjectId } from "@/api/system/userProject";
 
 export default {
   name: "Message",
@@ -517,6 +516,17 @@ export default {
     toProjectInfo() {
       this.$router.push("/system/projectInfo/" + this.detail.project.projectId);
     },
+    /** 跳转项目详情 */
+    selectChange(projectId) {
+      listUserByProjectId(projectId).then((response) => {
+          this.userOptions = response.data.users;
+      });
+      listTaskByProjectId(projectId).then((response) => {
+          this.taskOptions = response.data.tasks;
+      });
+      
+    },
+    
   },
 };
 </script>
