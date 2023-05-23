@@ -12,7 +12,7 @@ export function listMessage(query) {
 // 查询公告详细
 export function getMessage(messageId) {
   return request({
-    url: '/system/message/' + messageId,
+    url: '/system/message/get?messageId=' + messageId,
     method: 'get'
   })
 }
@@ -26,19 +26,27 @@ export function addMessage(data) {
   })
 }
 
-// 修改公告
-export function updateMessage(data) {
+// 阅读公告
+export function readMessage(messageId) {
   return request({
-    url: '/system/message',
-    method: 'put',
-    data: data
+    url: '/system/message/read?messageId=' + messageId,
+    method: 'post',
   })
 }
 
 // 删除公告
 export function delMessage(messageId) {
   return request({
-    url: '/system/message/' + messageId,
+    url: '/system/message/delete?messageId=' + messageId,
     method: 'delete'
+  })
+}
+
+// 批量删除公告
+export function delMessageList(data) {
+  return request({
+    url: '/system/message/deletelist',
+    method: 'delete',
+    data: data
   })
 }

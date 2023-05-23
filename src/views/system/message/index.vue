@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <!-- 搜索  -->
     <el-form
       :model="queryParams"
       ref="queryForm"
@@ -8,10 +9,19 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="公告标题" prop="messageTitle">
+      <el-form-item label="消息标题" prop="messageTitle">
         <el-input
           v-model="queryParams.messageTitle"
-          placeholder="请输入公告标题"
+          placeholder="请输入消息标题"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+
+      <el-form-item label="消息内容" prop="messageContent">
+        <el-input
+          v-model="queryParams.messageContent"
+          placeholder="请输入消息内容"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -32,10 +42,10 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="类型" prop="messageType">
+      <el-form-item label="类型" prop="status">
         <el-select
-          v-model="queryParams.messageType"
-          placeholder="公告类型"
+          v-model="queryParams.status"
+          placeholder="消息类型"
           clearable
         >
           <el-option key="0" label="未读" value="0" />
@@ -57,6 +67,7 @@
       </el-form-item>
     </el-form>
 
+    <!-- 表上操作按钮 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -85,6 +96,7 @@
       ></right-toolbar>
     </el-row>
 
+    <!-- 数据表 -->
     <el-table
       v-loading="loading"
       :data="messageList"
@@ -98,7 +110,7 @@
         width="40"
       />
       <el-table-column
-        label="公告标题"
+        label="消息标题"
         align="center"
         prop="messageTitle"
         width="100"
@@ -109,28 +121,30 @@
         prop="messageContent"
         :show-overflow-tooltip="true"
       />
-      
-      <el-table-column 
-        label="状态" 
-        align="center" 
-        prop="status" 
-        width="100"
-      />
-      
+
+      <el-table-column label="状态" align="center" prop="status" width="100">
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.status === 0" type="danger">未读</el-tag>
+          <el-tag v-else-if="scope.row.status === 1" type="success"
+            >已读</el-tag
+          >
+          <el-tag v-else-if="scope.row.status === 2" type="warning"
+            >已删</el-tag
+          >
+          <el-tag v-else type="warning">已删</el-tag>
+        </template>
+      </el-table-column>
+
       <el-table-column
-        label="项目id"
+        label="项目"
         align="center"
         prop="projectId"
         width="100"
       />
 
-      <el-table-column
-        label="任务id"
-        align="center"
-        prop="taskId"
-        width="100"
-      />
+      <el-table-column label="任务" align="center" prop="taskId" width="100" />
 
+      <!-- 表中操作 -->
       <el-table-column
         label="操作"
         align="center"
@@ -141,7 +155,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
+            @click="handleRead(scope.row)"
             >阅读</el-button
           >
           <el-button
@@ -153,43 +167,134 @@
           >
         </template>
       </el-table-column>
-
     </el-table>
 
-    <!-- 添加或修改公告对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body>
+    <!-- 添加消息对话框 -->
+    <el-dialog
+      :title="title"
+      :visible.sync="open"
+      width="780px"
+      append-to-body
+      v-dialogDrag
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="公告标题" prop="messageTitle">
+            <el-form-item label="消息标题" prop="messageTitle">
               <el-input
                 v-model="form.messageTitle"
-                placeholder="请输入公告标题"
+                placeholder="请输入消息标题"
               />
             </el-form-item>
           </el-col>
+
           <el-col :span="12">
-            <el-form-item label="公告类型" prop="messageType">
-              <el-select
-                v-model="form.messageType"
-                placeholder="请选择公告类型"
-              >
-                <el-option key="0" label="未读" value="0" />
-                <el-option key="1" label="已读" value="1" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          
-          <el-col :span="24">
-            <el-form-item label="内容">
-              <editor v-model="form.messageContent" :min-height="192" />
+            <el-form-item label="消息类型" prop="menuType">
+              <el-radio-group v-model="form.menuType">
+                <el-radio label="M">项目</el-radio>
+                <el-radio label="C">任务</el-radio>
+                <el-radio label="F">成员</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
 
+          <el-col :span="12" >
+            <el-form-item label="选择项目" filterable placeholder="请选择" prop="projectId">
+              <el-select v-model="form.projectId" @change="selectChange(form.projectId)" placeholder="请选择项目">
+                <el-option
+                  v-for="project in projectOptions"
+                  :key="project.projectName"
+                  :label="project.projectName"
+                  :value="project.projectId"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12" v-if="form.menuType == 'C'">
+            <el-form-item label="选择任务" prop="taskId">
+              <el-select v-model="form.messageType" placeholder="请选择任务">
+
+                <el-option
+                  v-for="task in taskOptions"
+                  :key="task.taskName"
+                  :label="task.taskName"
+                  :value="task.taskId"
+                />
+
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12" v-if="form.menuType == 'F'">
+            <el-form-item label="选择成员" prop="userId">
+              <el-select v-model="form.messageType" placeholder="请选择成员">
+
+                <el-option
+                  v-for="user in userOptions"
+                  :key="user.userName"
+                  :label="user.userName"
+                  :value="user.userId"
+                />
+
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24">
+            <el-form-item label="内容">
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 3, maxRows: 5 }"
+                placeholder="请输入内容"
+                v-model="form.messageContent"
+              >
+              </el-input>
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 查看消息对话框 -->
+    <el-dialog
+      :title="title"
+      :visible.sync="detailopen"
+      width="780px"
+      append-to-body
+      v-dialogDrag
+    >
+      <el-row>
+        <el-col :span="24">
+          <el-label>消息标题</el-label>
+          <p>{{ this.detail.message.messageTitle }}</p>
+        </el-col>
+
+        <el-col :span="24">
+          <el-label>消息内容</el-label>
+          <p>{{ this.detail.message.messageContent }}</p>
+        </el-col>
+        <el-col v-if="this.detail.project != null" :span="12">
+          <el-label>项目</el-label>
+          <p>
+            <a @click="toProjectInfo()">{{
+              this.detail.project.projectName
+            }}</a>
+          </p>
+        </el-col>
+
+        <el-col v-if="this.detail.task != null" :span="12">
+          <el-label>任务</el-label>
+          <p>{{ this.detail.task.taskName }}</p>
+        </el-col>
+      </el-row>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitRead">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -202,10 +307,12 @@ import {
   getMessage,
   delMessage,
   addMessage,
-  updateMessage,
+  readMessage,
+  delMessageList,
 } from "@/api/system/message";
 
-import { listProject } from "@/api/system/project";
+import { listProject, getProject } from "@/api/system/project";
+import { getTask } from "@/api/system/task";
 
 export default {
   name: "Message",
@@ -224,29 +331,49 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 公告表格数据
+      // 消息表格数据
       messageList: [],
       // 项目list
       projectOptions: [],
+      taskOptions:[],
+      userOptions:[],
       // 弹出层标题
       title: "",
-      // 是否显示弹出层
+      // 是否显示新增弹出层
       open: false,
+      // 是否显示详情弹出层
+      detailopen: false,
       // 查询参数
       queryParams: {
         messageTitle: undefined,
+        messageContent: undefined,
         projectId: undefined,
         status: undefined,
       },
       // 表单参数
       form: {},
+      // 消息详情
+      detail: {
+        message: {
+          messageId: undefined,
+          messageTitle: undefined,
+          messageContent: undefined,
+          projectId: undefined,
+          status: undefined,
+        },
+        project: undefined,
+        task: undefined,
+      },
       // 表单校验
       rules: {
         messageTitle: [
-          { required: true, message: "公告标题不能为空", trigger: "blur" },
+          { required: true, message: "消息标题不能为空", trigger: "blur" },
         ],
-        messageType: [
-          { required: true, message: "公告类型不能为空", trigger: "change" },
+        messageContent: [
+          { required: true, message: "消息内容不能为空", trigger: "change" },
+        ],
+        menuType: [
+          { required: true, message: "消息类型不能为空", trigger: "change" },
         ],
       },
     };
@@ -256,7 +383,7 @@ export default {
     this.getprojectOptions();
   },
   methods: {
-    /** 查询公告列表 */
+    /** 查询消息列表 */
     getList() {
       this.loading = true;
       listMessage(this.queryParams).then((response) => {
@@ -267,14 +394,19 @@ export default {
     getprojectOptions() {
       this.loading = true;
       listProject(this.queryParams).then((response) => {
-        this.projectOptions = this.handleTree(response.data.projects, "projectId");
+        this.projectOptions = this.handleTree(
+          response.data.projects,
+          "projectId"
+        );
         this.loading = false;
       });
     },
     // 取消按钮
     cancel() {
       this.open = false;
+      this.detailopen = false;
       this.reset();
+      this.resetDetail();
     },
     // 表单重置
     reset() {
@@ -282,12 +414,13 @@ export default {
         messageTitle: undefined,
         messageContent: undefined,
         status: "0",
+        menuType: "M",
       };
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
+      // this.queryParams.pageNum = 1;
       this.getList();
     },
     /** 重置按钮操作 */
@@ -305,29 +438,52 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加公告";
+      this.title = "添加消息";
     },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const messageId = row.messageId || this.ids;
+    // 表单重置
+    resetDetail() {
+      this.detail.message = {
+        messageId: undefined,
+        messageTitle: undefined,
+        messageContent: undefined,
+        status: "0",
+      };
+    },
+    /** 阅读详情按钮操作 */
+    handleRead(row) {
+      this.resetDetail();
+      const messageId = row.messageId;
       getMessage(messageId).then((response) => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改公告";
+        this.detail.message = response.data.message;
+        console.log(this.detail.message);
+        this.detailopen = true;
+        this.title = "消息详情";
+        if (this.detail.message.projectId != null) {
+          getProject(this.detail.message.projectId).then((response) => {
+            this.detail.project = response.data.project;
+          });
+        }
+        if (this.detail.message.taskId != null) {
+          getTask(this.detail.message.taskId).then((response) => {
+            this.detail.task = response.data.task;
+          });
+        }
       });
     },
+    /** 提交已阅操作 */
+    submitRead() {
+      const messageId = this.detail.message.messageId;
+      readMessage(messageId).then((response) => {
+        this.detailopen = false;
+        this.getList();
+      });
+    },
+
     /** 提交按钮 */
     submitForm: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          if (this.form.messageId != undefined) {
-            updateMessage(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
+          if (this.form.messageId == undefined) {
             addMessage(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -341,8 +497,13 @@ export default {
     handleDelete(row) {
       const messageIds = row.messageId || this.ids;
       this.$modal
-        .confirm('是否确认删除公告编号为"' + messageIds + '"的数据项？')
+        .confirm('是否确认删除消息编号为"' + messageIds + '"的数据项？')
         .then(function () {
+          if (typeof messageIds == "object") {
+            console.log("666");
+            return delMessageList(messageIds);
+          }
+          console.log("777");
           return delMessage(messageIds);
         })
         .then(() => {
@@ -350,6 +511,11 @@ export default {
           this.$modal.msgSuccess("删除成功");
         })
         .catch(() => {});
+    },
+    
+    /** 跳转项目详情 */
+    toProjectInfo() {
+      this.$router.push("/system/projectInfo/" + this.detail.project.projectId);
     },
   },
 };
