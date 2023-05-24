@@ -58,3 +58,11 @@ export function delProject(projectId) {
     method: 'delete'
   })
 }
+
+//根据团队ID获取项目列表
+export function getListByTeamId(teamId){
+  return request({
+    url: '/system/projectlist/'+teamId,
+    method: 'get'
+  })
+}

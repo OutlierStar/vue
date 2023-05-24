@@ -46,17 +46,7 @@
 
     <!-- 表上的新增 -->
     <el-row :gutter="10" class="mb8">
-      <!-- 新增 -->
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          >新增</el-button
-        >
-      </el-col>
+      
 
       <right-toolbar
         :showSearch.sync="showSearch"
@@ -377,12 +367,7 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加项目";
-    },
+    
     /** 展开/折叠操作 */
     toggleExpandAll() {
       this.refreshTable = false;

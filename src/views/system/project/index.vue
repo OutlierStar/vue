@@ -46,7 +46,17 @@
 
     <!-- 表上的新增 -->
     <el-row :gutter="10" class="mb8">
-
+      <!-- 新增 -->
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          >新增</el-button
+        >
+      </el-col>
       <right-toolbar
         :showSearch.sync="showSearch"
         @queryTable="getList"
@@ -208,7 +218,7 @@
                 <el-option
                   v-for="item in leaderOptions"
                   :key="item.userId"
-                  :label="item.userId"
+                  :label="item.nickName"
                   :value="item.userId"
                 >
                 </el-option>
@@ -321,7 +331,12 @@ export default {
         row.status = row.status === "0" ? "1" : "0";
       });
     },
-
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.open = true;
+      this.title = "添加项目";
+    },
     /** 查询团队列表 */
     getTeamList() {
       this.loading = true;
@@ -398,13 +413,13 @@ export default {
               this.getList();
             });
           }
-          //  else {
-          //   addProject(this.form).then((response) => {
-          //     this.$modal.msgSuccess("新增成功");
-          //     this.open = false;
-          //     this.getList();
-          //   });
-          // }
+           else {
+            addProject(this.form).then((response) => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
         }
       });
     },

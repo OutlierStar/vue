@@ -101,6 +101,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/system',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'userteam/:teamId',
+        component: () => import('@/views/system/team/teamInfo'),
+        name: 'teamInfo',
+        meta: { title: '团队信息', activeMenu: '/system/team' }
+      }
+    ]
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',

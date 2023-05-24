@@ -107,6 +107,13 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
           >删除</el-button>
+          <el-button
+            v-if="scope.row.parentId != 0"
+            size="mini"
+            type="text"
+            icon="el-icon-position"
+            @click="handleEnter(scope.row)"
+          >进入</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -204,7 +211,7 @@
 <script>
 import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
 import { listUser } from "@/api/system/user";
-import { Invate } from "@/api/system/userteam";
+import { Invate, getTeamMate} from "@/api/system/userteam";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -220,6 +227,9 @@ export default {
       showSearch: true,
       // 表格树数据
       teamList: [],
+      //团队中用户数据
+      userteams: [],
+      //用户数据
       leaderList:[],
       // 团队树选项
       teamOptions: [],
@@ -302,7 +312,16 @@ export default {
         row.status = row.status === "0" ? "1" : "0";
       });
     },
-
+    //进入团队
+    handleEnter(row){
+      this.loading = true;
+      getTeamMate(row.teamId).then((response)=>{
+        this.userteams = response.data.userteams;
+        this.loading = false;
+        console.log(this.userteams);
+      })
+      this.$router.push("/system/userteam/"+row.teamId)
+    },
     /** 查询用户列表 */
     getUserList() {
       this.loading = true;
