@@ -2,10 +2,10 @@
 
 ```bash
 # 克隆项目
-git clone https://gitee.com/y_project/RuoYi-Vue
+git git@github.com:OutlierStar/vue.git
 
 # 进入项目目录
-cd ruoyi-ui
+cd vue
 
 # 安装依赖
 npm install
