@@ -98,8 +98,8 @@
             size="mini"
             type="text"
             icon="el-icon-plus"
-            @click="handleAdd(scope.row)"
-          >新增</el-button>
+            @click="handleInvate(scope.row)"
+          >邀请</el-button>
           <el-button
             v-if="scope.row.parentId != 0"
             size="mini"
@@ -177,12 +177,34 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--邀请框-->
+    <el-dialog :title="title" :visible.sync="invate" width="300px" append-to-body>
+        <el-form ref="invates" :model="invates" label-width="80px">
+          <el-form-item label="邀请成员" prop="leaderId">
+              <el-select v-model="invates.userId" multiple placeholder="请选择">
+                <el-option
+                  v-for="item in leaderList"
+                  :key="item.userId"
+                  :label="item.nickName"
+                  :value="item.userId"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm1">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
 import { listUser } from "@/api/system/user";
+import { Invate } from "@/api/system/userteam";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -205,6 +227,8 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      // 邀请框是否显示
+      invate:false,
       // 是否展开，默认全部展开
       isExpandAll: true,
       // 重新渲染表格状态
@@ -216,7 +240,19 @@ export default {
       },
       // 表单参数
       form: {},
-      // 表单校验
+      // 邀请列表
+      invates:{},
+      //信息表
+      message:{},
+      // 重置信息表
+      resetDetail() {
+        this.message = {
+          messageId: undefined,
+          messageTitle: undefined,
+          messageContent: undefined,
+          status: "0",
+        };
+      },
       rules: {  
         teamName: [
           { required: true, message: "团队名称不能为空", trigger: "blur" }
@@ -279,6 +315,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.invate = false;
       this.reset();
     },
     // 表单重置
@@ -293,7 +330,12 @@ export default {
         status: "0",
         leaderId: undefined
       };
+      this.invates = {
+        teamId: undefined,
+        userId: [],
+      }
       this.resetForm("form");
+      this.resetForm("invates");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -334,6 +376,13 @@ export default {
         
       });
     },
+
+    /**邀请按钮操作 */
+    handleInvate(row){
+      this.invate = true;
+      this.title = "邀请成员"
+      this.invates.teamId = row.teamId
+    },
     /** 提交按钮 */
     submitForm: function() {
       this.$refs["form"].validate(valid => {
@@ -354,6 +403,24 @@ export default {
         }
       });
     },
+    /** 邀请框提交按钮 */
+    submitForm1: function() {
+      this.$refs["invates"].validate(valid => {
+        if (valid) {
+          if(this.invates!=null){
+              var ids = this.invates.userId;
+              Invate(this.invates.teamId,ids).then((response)=>{
+                this.$modal.msgSuccess("邀请成功");
+              this.invate = false;
+              })
+            };
+          }else{
+            this.$modal.msgSuccess("邀请失败");
+              this.invate = false;
+          }
+          })
+      },
+    
     /** 删除按钮操作 */
     handleDelete(row) {
       this.$modal.confirm('是否确认删除名称为"' + row.teamName + '"的数据项？').then(function() {
@@ -362,7 +429,7 @@ export default {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
-    }
+    
   }
-};
+  }}
 </script>

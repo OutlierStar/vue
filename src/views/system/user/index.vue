@@ -4,16 +4,18 @@
       <!--部门数据-->
       <el-col :span="24" :xs="24">
         <div class="head-container">
-          <el-input
+          
+        </div>
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+          <el-form-item label="团队名称" prop="teamName">
+            <el-input
             v-model="deptName"
             placeholder="请输入团队名称"
             clearable
             size="small"
             prefix-icon="el-icon-search"
-            style="margin-bottom: 20px"
           />
-        </div>
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+          </el-form-item>
           <el-form-item label="用户名称" prop="userName">
             <el-input
               v-model="queryParams.userName"
