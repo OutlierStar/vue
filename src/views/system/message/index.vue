@@ -102,7 +102,7 @@
       :data="messageList"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column type="selection" width="50" align="center" />
       <el-table-column
         label="序号"
         align="center"
@@ -113,7 +113,7 @@
         label="消息标题"
         align="center"
         prop="messageTitle"
-        width="100"
+        width="200"
       />
       <el-table-column
         label="消息内容"
@@ -122,7 +122,7 @@
         :show-overflow-tooltip="true"
       />
 
-      <el-table-column label="状态" align="center" prop="status" width="100">
+      <el-table-column label="状态" align="center" prop="status" width="120">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status === 0" type="danger">未读</el-tag>
           <el-tag v-else-if="scope.row.status === 1" type="success"
@@ -131,24 +131,20 @@
           <el-tag v-else-if="scope.row.status === 2" type="warning"
             >已删</el-tag
           >
-          <el-tag v-else type="warning">已删</el-tag>
+          <el-tag v-else type="warning">未知</el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column
-        label="项目"
-        align="center"
-        prop="projectId"
-        width="100"
-      />
+      <el-table-column label="项目" align="center" prop="projectId" width="80" />
 
-      <el-table-column label="任务" align="center" prop="taskId" width="100" />
+      <el-table-column label="任务" align="center" prop="taskId" width="80" />
 
       <!-- 表中操作 -->
       <el-table-column
         label="操作"
         align="center"
         class-name="small-padding fixed-width"
+         width="200" 
       >
         <template slot-scope="scope">
           <el-button
@@ -268,16 +264,17 @@
     >
       <el-row>
         <el-col :span="24">
-          <el-label>消息标题</el-label>
+          <h3 class="mx-1" size="large"><b>消息标题</b></h3>
           <p>{{ this.detail.message.messageTitle }}</p>
         </el-col>
 
         <el-col :span="24">
-          <el-label>消息内容</el-label>
+          <h3 class="mx-1" size="large"><b>消息内容</b></h3>
           <p>{{ this.detail.message.messageContent }}</p>
         </el-col>
+
         <el-col v-if="this.detail.project != null" :span="12">
-          <el-label>项目</el-label>
+          <h3 class="mx-1" size="large"><b>项目</b></h3>
           <p>
             <a @click="toProjectInfo()">{{
               this.detail.project.projectName
@@ -286,7 +283,7 @@
         </el-col>
 
         <el-col v-if="this.detail.task != null" :span="12">
-          <el-label>任务</el-label>
+          <h3 class="mx-1" size="large"><b>任务</b></h3>
           <p>{{ this.detail.task.taskName }}</p>
         </el-col>
       </el-row>
@@ -310,7 +307,7 @@ import {
 } from "@/api/system/message";
 
 import { listProject, getProject } from "@/api/system/project";
-import { listTaskByProjectId } from "@/api/system/task";
+import { listTaskByProjectId,getTask } from "@/api/system/task";
 import { listUserByProjectId } from "@/api/system/userProject";
 
 export default {
@@ -454,7 +451,6 @@ export default {
       const messageId = row.messageId;
       getMessage(messageId).then((response) => {
         this.detail.message = response.data.message;
-        console.log(this.detail.message);
         this.detailopen = true;
         this.title = "消息详情";
         if (this.detail.message.projectId != null) {
@@ -499,10 +495,8 @@ export default {
         .confirm('是否确认删除消息编号为"' + messageIds + '"的数据项？')
         .then(function () {
           if (typeof messageIds == "object") {
-            console.log("666");
             return delMessageList(messageIds);
           }
-          console.log("777");
           return delMessage(messageIds);
         })
         .then(() => {
