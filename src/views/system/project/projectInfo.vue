@@ -71,19 +71,32 @@
             <el-tab-pane label="进度" name="info">
               <!-- 展示任务进度 -->
               <el-row>
+                <el-col :span="3" :xs="24"><span>总任务进度</span></el-col>
+                <el-col :span="8" :xs="24"
+                  ><el-progress
+                    :text-inside="true"
+                    :stroke-width="18"
+                    :percentage="50"
+                    color="rgb(22, 219, 111)"
+                  ></el-progress
+                ></el-col>
+                <el-col :span="2" :xs="24"><span>5/10</span></el-col>
+              </el-row>
+              
+              <el-row>
                 <el-col :span="3" :xs="24"><span>本周任务进度</span></el-col>
                 <el-col :span="8" :xs="24"
                   ><el-progress
                     :text-inside="true"
                     :stroke-width="18"
-                    :percentage="70"
+                    :percentage="60"
                   ></el-progress
                 ></el-col>
-                <el-col :span="2" :xs="24"><span>7/10</span></el-col>
+                <el-col :span="2" :xs="24"><span>3/5</span></el-col>
               </el-row>
 
               <!-- 展示任务 -->
-              <el-row v-for="i in usersList" :key="i.userId">
+              <el-row  v-for="i in usersList" :key="i.userId" v-show="showProjectTask">
                 <el-col :span="2" :xs="24">
                   <p class="scrollbar-demo-username">
                     <span>{{ i.user.nickName }}</span>
@@ -100,7 +113,6 @@
                         >
                           <p 
                           :class="item.status == '2'? 'scrollbar-demo-item finished' : 'scrollbar-demo-item'"
-
                           >
                             {{ item.taskName }}
                           </p>
@@ -141,6 +153,8 @@ export default {
       project: {},
       user: {},
       team: {},
+      // 显示项目任务进度
+      showProjectTask: false,
       activeTab: "info",
       usersList: [
         {
@@ -200,6 +214,7 @@ export default {
         });
         listTaskByProjectIdGroupByUserOrderByOverTime(this.project.projectId).then((response) => {
           this.usersList = response.data.users;
+          this.showProjectTask = true;
         })
       });
     }
@@ -232,9 +247,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 120px;
+  width: 80px;
   height: 80px;
-  margin: 10px 3px 10px 3px;
+  margin: 10px 30px 10px 0px;
   text-align: center;
   border-radius: 4px;
   background: var(--el-color-danger-light-9);

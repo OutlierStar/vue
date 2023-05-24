@@ -508,6 +508,7 @@ export default {
     
     /** 跳转项目详情 */
     toProjectInfo() {
+      this.detailopen = false;
       this.$router.push("/system/projectInfo/" + this.detail.project.projectId);
     },
     /** 跳转项目详情 */
