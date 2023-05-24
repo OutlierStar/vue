@@ -104,7 +104,7 @@
     >
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column
-        label="序号"
+        label="编号"
         align="center"
         prop="messageId"
         width="40"
