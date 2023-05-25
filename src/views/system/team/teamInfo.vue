@@ -51,30 +51,47 @@
             <el-tab-pane label="成员列表" name="member">
                 <el-table
                     v-loading="loading"
-                    :data="userlist"
-                    row-key="userId"
+                    :data="userteamlist"
                     :default-expand-all="isExpandAll"
                     :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
                     >
                     <el-table-column
-                        prop="userId"
+                        prop="user.userId"
                         label="用户ID"
-                        width="100"
+                        width="160"
                     ></el-table-column>
                     <el-table-column
-                        prop="roleId"
-                        label="所属角色"
+                        prop="user.nickName"
+                        label="用户名称"
+
                         :show-overflow-tooltip="true"
                         width="160"
                     ></el-table-column>
                     <el-table-column
-                        prop="phone"
+                        prop="user.sex"
+                        label="性别"
+                        :show-overflow-tooltip="true"
+                        width="160"
+                    ></el-table-column>
+                    <el-table-column
+                        prop="role.roleName"
+                        label="所属角色"
+
+                        :show-overflow-tooltip="true"
+                        width="160"
+                    ></el-table-column>
+                    <el-table-column
+                        prop="user.phonenumber"
                         label="电话"
                         :show-overflow-tooltip="true"
                         width="160"
                     ></el-table-column>
-                    <el-table-column prop="status" label="状态" width="80" align="center">
-                    </el-table-column>
+                    <el-table-column
+                        prop="user.email"
+                        label="邮箱"
+                        :show-overflow-tooltip="true"
+                        width="195"
+                    ></el-table-column>
                     </el-table>
             </el-tab-pane>
             <el-tab-pane label="项目列表" name="project">
@@ -137,7 +154,7 @@ export default {
       projectlist: [],
       user: {},
       team: {},
-      userlist: [],
+      userteamlist: [],
       activeTab: "member",
     };
   },
@@ -154,7 +171,8 @@ export default {
             this.projectlist = response.data.projects;
         })
         getTeamMate(teamId).then((response)=>{
-            this.userlist = response.data.userteams;
+            this.userteamlist = response.data.userteams;
+            console.log(this.userteamlist)
         })
       });
     }
