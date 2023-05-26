@@ -199,6 +199,17 @@
                 </el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="选择角色" prop="roleId">
+              <el-select v-model="invates.role" multiple placeholder="请选择">
+                <el-option
+                  v-for="item in roleList"
+                  :key="item.roleId"
+                  :label="item.roleName"
+                  :value="item.roleId"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm1">确 定</el-button>
@@ -211,6 +222,7 @@
 <script>
 import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
 import { listUser } from "@/api/system/user";
+import { listRole } from "@/api/system/role";
 import { Invate, getTeamMate} from "@/api/system/userteam";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -229,6 +241,8 @@ export default {
       teamList: [],
       //团队中用户数据
       userteams: [],
+      //角色数据
+      roleList:[],
       //用户数据
       leaderList:[],
       // 团队树选项
@@ -254,6 +268,7 @@ export default {
       invates:{},
       //信息表
       message:{},
+      invite:{},
       // 重置信息表
       resetDetail() {
         this.message = {
@@ -290,6 +305,7 @@ export default {
   created() {
     this.getList();
     this.getUserList();
+    this.getRole();
   },
   methods: {
     /** 查询团队列表 */
@@ -299,6 +315,15 @@ export default {
         this.teamList = this.handleTree(response.data.teams, "teamId");
         this.loading = false;
       });
+    },
+
+    //获取角色信息
+    getRole(){
+      this.loading = true;
+      listRole(this.queryParams).then((response)=>{
+        this.roleList = response.data.roles
+        this.loading = false;
+      })
     },
 
     // 团队状态修改
@@ -352,6 +377,11 @@ export default {
       this.invates = {
         teamId: undefined,
         userId: [],
+        role: undefined,
+      };
+      this.invite = {
+        userId:[],
+        role: undefined
       }
       this.resetForm("form");
       this.resetForm("invates");
@@ -428,9 +458,12 @@ export default {
         if (valid) {
           if(this.invates!=null){
               var ids = this.invates.userId;
-              Invate(this.invates.teamId,ids).then((response)=>{
+              var role = this.invates.role;
+              Invate(this.invates.teamId,ids,role).then((response)=>{
                 this.$modal.msgSuccess("邀请成功");
-              this.invate = false;
+                this.invate = false;
+                console.log(ids)
+                console.log(role)
               })
             };
           }else{
