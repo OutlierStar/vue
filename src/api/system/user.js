@@ -10,6 +10,18 @@ export function listUser(query) {
   })
 }
 
+
+// 查询用户列表
+export function listUserToInvite(teamId) {
+  return request({
+    url: '/system/user/listtoinvite',
+    method: 'get',
+    params: {
+      teamId: teamId
+    }
+  })
+}
+
 // 查询用户详细
 export function getUser(userId) {
   return request({

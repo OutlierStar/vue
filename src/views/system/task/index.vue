@@ -118,14 +118,16 @@
         :show-overflow-tooltip="true"
         width="150"
       />
-      <el-table-column label="状态" align="center" width="100">
+      <el-table-column label="状态" align="center" width="100" prop="status">
         <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            active-value="0"
-            inactive-value="1"
-            @change="handleStatusChange(scope.row)"
-          ></el-switch>
+          <el-tag v-if="scope.row.status === '0'" type="danger">未开始</el-tag>
+          <el-tag v-else-if="scope.row.status === '1'" type="success"
+            >进行中</el-tag
+          >
+          <el-tag v-else-if="scope.row.status === '2'" type="warning"
+            >已完成</el-tag
+          >
+          <el-tag v-else type="warning">未知</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -170,13 +172,6 @@
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
 
     <!-- 添加或修改项目对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="680px" append-to-body>
@@ -234,7 +229,7 @@
                 <el-option key="1" label="进行中" value="1" />
                 <el-option key="2" label="已完成" value="2" />
               </el-select>
-              
+
               <!-- 原有的 -->
               <!-- <el-radio-group v-model="form.status">
                 <el-radio label="0">未开始</el-radio>
@@ -327,6 +322,8 @@ export default {
       open: false,
       // 日期范围
       dateRange: [],
+      // 人员列表
+      leaderOptions: [],
       // 查询参数
       queryParams: {
         roleName: undefined,
@@ -362,6 +359,9 @@ export default {
 
     /** 查询任务列表 */
     getList(requireId) {
+      if (requireId == undefined) {
+        requireId = this.$route.params.requireId
+      }
       this.loading = true;
       listTaskById(requireId).then((response) => {
         this.taskList = response.data.tasks;

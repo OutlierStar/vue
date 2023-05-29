@@ -221,7 +221,7 @@
 
 <script>
 import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
-import { listUser } from "@/api/system/user";
+import { listUserToInvite } from "@/api/system/user";
 import { listRole } from "@/api/system/role";
 import { Invate, getTeamMate} from "@/api/system/userteam";
 import Treeselect from "@riophae/vue-treeselect";
@@ -304,7 +304,7 @@ export default {
   },
   created() {
     this.getList();
-    this.getUserList();
+    // this.getUserList();
     this.getRole();
   },
   methods: {
@@ -347,14 +347,11 @@ export default {
       })
       this.$router.push("/system/userteam/"+row.teamId)
     },
-    /** 查询用户列表 */
-    getUserList() {
-      this.loading = true;
-      listUser(this.queryParams).then((response) => {
-        this.leaderList = this.handleTree(response.data.users, "userId");
-        this.loading = false;
-      });
-    },
+    // /** 查询用户列表 */
+    // getUserList(teamId) {
+    //   this.loading = true;
+      
+    // },
     
     // 取消按钮
     cancel() {
@@ -428,9 +425,13 @@ export default {
 
     /**邀请按钮操作 */
     handleInvate(row){
-      this.invate = true;
-      this.title = "邀请成员"
-      this.invates.teamId = row.teamId
+      listUserToInvite(row.teamId).then((response) => {
+        this.leaderList = this.handleTree(response.data.users, "userId");
+        this.invates.teamId = row.teamId;
+        this.loading = false;
+        this.invate = true;
+        this.title = "邀请成员"
+      });
     },
     /** 提交按钮 */
     submitForm: function() {
