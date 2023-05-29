@@ -229,10 +229,18 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="任务状态" prop="status">
-              <el-radio-group v-model="form.status">
-                <el-radio label="0">正常</el-radio>
-                <el-radio label="1">完结</el-radio>
-              </el-radio-group>
+              <el-select v-model="form.status" placeholder="">
+                <el-option key="0" label="未开始" value="0" />
+                <el-option key="1" label="进行中" value="1" />
+                <el-option key="2" label="已完成" value="2" />
+              </el-select>
+              
+              <!-- 原有的 -->
+              <!-- <el-radio-group v-model="form.status">
+                <el-radio label="0">未开始</el-radio>
+                <el-radio label="1">进行中</el-radio>
+                <el-radio label="2">已完成</el-radio>
+              </el-radio-group> -->
             </el-form-item>
           </el-col>
 
@@ -402,7 +410,7 @@ export default {
         overTime: undefined,
         phone: undefined,
         email: undefined,
-        projectId:undefined
+        projectId: undefined,
       };
       this.resetForm("form");
     },
